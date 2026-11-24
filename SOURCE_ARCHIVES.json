@@ -1,0 +1,38 @@
+[
+  {
+    "file": "offline-speech-9fdb771e-source.tar.gz",
+    "source": "https://codeload.github.com/dimacurrentai/offline-speech/tar.gz/9fdb771e5bfeec518ed7e9f7afc0f27985623a97",
+    "sha256": "2db25df1eb8bfe39e515d9004da558d7932c4721dc4ede4216fecb0dcc784436",
+    "bytes": 854732
+  },
+  {
+    "file": "espeak-ng-browser-890071ff.tar.gz",
+    "source": "https://codeload.github.com/espeak-ng/espeak-ng/tar.gz/890071ff30231883d761e4d59edabd6d69faf159",
+    "sha256": "5da62c4d6af424cf8236dd4952326f28b328eb37c83f423a1c889435a97b5bc8",
+    "bytes": 16321798
+  },
+  {
+    "file": "sherpa-onnx-v1.12.35.tar.gz",
+    "source": "https://codeload.github.com/k2-fsa/sherpa-onnx/tar.gz/refs/tags/v1.12.35",
+    "sha256": "b0388098c09fec7c178cd86df3a16ff0478a2888d571c4d1c1ac196096d9b920",
+    "bytes": 9529574
+  },
+  {
+    "file": "piper-phonemize-78a788e0.zip",
+    "source": "https://codeload.github.com/csukuangfj/piper-phonemize/zip/78a788e0b719013401572d70fef372e77bff8e43",
+    "sha256": "89641a46489a4898754643ce57bda9c9b54b4ca46485fdc02bf0dc84b866645d",
+    "bytes": 9805951
+  },
+  {
+    "file": "espeak-ng-7251208e.zip",
+    "source": "https://codeload.github.com/csukuangfj/espeak-ng/zip/7251208ee427ef87e94f39d0e99b15d287224ed6",
+    "sha256": "909375fe289133fea765ee2e2369834b78b6ebc49d3fbeb4eaf3aa9d7fd685d4",
+    "bytes": 18011656
+  },
+  {
+    "file": "llama.cpp-b12681.tar.gz",
+    "source": "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/refs/tags/b12681",
+    "sha256": "03d2e9c1b9361821eb15476ffd726230ff9b22f54dcf6e8722b92aa29cd7971a",
+    "bytes": 39417232
+  }
+]

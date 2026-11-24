@@ -147,21 +147,36 @@ func Load(data []byte) (Document, error) {
 	return d, Validate(d)
 }
 func Master(d Document) string {
-	var body, notes []string
+	var body []string
+	type group struct {
+		title string
+		notes []string
+	}
+	var groups []group
+	chapter := "Source notes"
 	for _, p := range d.Blocks {
-		if p.Destination == "omit" {
-			continue
+		first := strings.TrimSpace(strings.SplitN(p.Source, "\n", 2)[0])
+		if strings.HasPrefix(first, "# ") {
+			chapter = strings.TrimSpace(strings.TrimPrefix(first, "# "))
 		}
-		if strings.TrimSpace(p.Prepared) == "" {
+		if p.Destination == "omit" || strings.TrimSpace(p.Prepared) == "" {
 			continue
 		}
 		if p.Destination == "notes" {
-			notes = append(notes, p.Prepared)
+			if len(groups) == 0 || groups[len(groups)-1].title != chapter {
+				groups = append(groups, group{title: chapter})
+			}
+			g := &groups[len(groups)-1]
+			g.notes = append(g.notes, p.Prepared)
 		} else {
 			body = append(body, p.Prepared)
 		}
 	}
-	if len(notes) > 0 {
+	if len(groups) > 0 {
+		var notes []string
+		for _, g := range groups {
+			notes = append(notes, "## "+g.title+"\n\n"+strings.Join(g.notes, "\n\n"))
+		}
 		body = append(body, "# Notes\n\n"+strings.Join(notes, "\n\n"))
 	}
 	return strings.TrimSpace(strings.Join(body, "\n\n")) + "\n"

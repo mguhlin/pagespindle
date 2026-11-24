@@ -34,7 +34,7 @@ func TestRealOfflineEngines(t *testing.T) {
 	if edit.ID != 1 || !strings.Contains(edit.After, "9:00") || !strings.Contains(edit.After, "5:00") {
 		t.Fatal("model proposal changed substantive numbers")
 	}
-	out := filepath.Join(t.TempDir(), "preview.wav")
+	out := filepath.Join(t.TempDir(), "preview-café-音.wav")
 	if err = e.Speak(ctx, "This is PageSpindle. Spin text into listening.", out, 1); err != nil {
 		t.Fatal(err)
 	}
@@ -42,5 +42,18 @@ func TestRealOfflineEngines(t *testing.T) {
 	if err != nil || rate != 22050 || len(pcm) < 22050 {
 		t.Fatal("actual voice output is not valid speech-length PCM")
 	}
-	t.Logf("Real local model returned a complete reviewed proposal; voice generated %.2f seconds of mono PCM", float64(len(pcm))/float64(rate*2))
+	e.mu.Lock()
+	control, done, url := e.control, e.done, e.url
+	e.mu.Unlock()
+	control.Close()
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("Model supervisor did not exit after owner-pipe EOF")
+	}
+	if r, err := client(time.Second).Get(url + "/health"); err == nil {
+		r.Body.Close()
+		t.Fatal("Model listener survived owner-pipe EOF")
+	}
+	t.Logf("Real local model returned a complete structured proposal; voice generated %.2f seconds of mono PCM through a Unicode output path; owner-pipe EOF stopped the model listener", float64(len(pcm))/float64(rate*2))
 }

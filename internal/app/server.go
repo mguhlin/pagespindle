@@ -59,6 +59,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("/", http.FileServer(http.FS(web)))
 	mux.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) { s.json(w, s.Engine.Status()) })
 	mux.HandleFunc("/api/new", s.newDocument)
+	mux.HandleFunc("/api/master", s.masterDocument)
 	mux.HandleFunc("/api/import", s.importDocument)
 	mux.HandleFunc("/api/prepare", s.prepare)
 	mux.HandleFunc("/api/render", s.render)
@@ -133,6 +134,18 @@ func (s *Server) newDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.json(w, d)
+}
+func (s *Server) masterDocument(w http.ResponseWriter, r *http.Request) {
+	var d book.Document
+	if e := decode(r, &d); e != nil {
+		s.fail(w, e)
+		return
+	}
+	if e := book.Validate(d); e != nil {
+		s.fail(w, e)
+		return
+	}
+	s.json(w, map[string]string{"text": book.Master(d)})
 }
 func (s *Server) importDocument(w http.ResponseWriter, r *http.Request) {
 	if e := r.ParseMultipartForm(1 << 20); e != nil {
@@ -347,7 +360,12 @@ func (s *Server) prepare(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		defer s.worker.Done()
 		var err error
-		defer func() { s.finish(j, err) }()
+		defer func() {
+			if ctx.Err() != nil {
+				s.Engine.Close()
+			}
+			s.finish(j, err)
+		}()
 		for i, b := range d.Blocks {
 			if ctx.Err() != nil {
 				err = ctx.Err()
@@ -480,7 +498,10 @@ func (s *Server) makeAudio(ctx context.Context, j *Job, req RenderRequest, chapt
 		if e != nil {
 			return errors.New("Cannot write the chapter; check free disk space")
 		}
-		f.Write(make([]byte, 44))
+		if _, e = f.Write(make([]byte, 44)); e != nil {
+			f.Close()
+			return errors.New("Cannot initialize chapter output; check free disk space")
+		}
 		var n uint32
 		var rate uint32
 		chunks, e := book.New(ch.Text, ch.Title)
@@ -569,8 +590,12 @@ func (s *Server) makeAudio(ctx context.Context, j *Job, req RenderRequest, chapt
 			fmt.Fprintf(&meta, "[CHAPTER]\nTIMEBASE=1/1000\nSTART=%d\nEND=%d\ntitle=%s\n", ms, end, metaEscape(chapters[i].Title))
 			ms = end
 		}
-		os.WriteFile(filepath.Join(j.dir, "chapters.txt"), []byte(concat.String()), 0600)
-		os.WriteFile(filepath.Join(j.dir, "book.ffmetadata"), []byte(meta.String()), 0600)
+		if e := os.WriteFile(filepath.Join(j.dir, "chapters.txt"), []byte(concat.String()), 0600); e != nil {
+			return errors.New("Cannot save chapter list; check free disk space")
+		}
+		if e := os.WriteFile(filepath.Join(j.dir, "book.ffmetadata"), []byte(meta.String()), 0600); e != nil {
+			return errors.New("Cannot save chapter metadata; check free disk space")
+		}
 		output = title + ".m4b"
 		if e := s.Engine.FFmpeg(ctx, "-nostdin", "-n", "-f", "concat", "-safe", "1", "-i", filepath.Join(j.dir, "chapters.txt"), "-f", "ffmetadata", "-i", filepath.Join(j.dir, "book.ffmetadata"), "-map", "0:a:0", "-map_metadata", "1", "-map_chapters", "1", "-c:a", "aac", "-b:a", "96k", "-movflags", "+faststart", "-f", "mp4", filepath.Join(j.dir, output)); e != nil {
 			return e

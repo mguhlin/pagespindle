@@ -1,0 +1,9 @@
+{
+  "name": "@mlc-ai/web-tokenizers",
+  "version": "0.1.6",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlc-ai/tokenizers-cpp"
+  }
+}

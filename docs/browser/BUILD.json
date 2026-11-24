@@ -1,0 +1,24 @@
+{
+  "version": "build-84d809ece5e6",
+  "go": "go version go1.27.4 linux/amd64",
+  "assets": [
+    "./",
+    "index.html",
+    "build-84d809ece5e6/app.js",
+    "build-84d809ece5e6/assets/import.webp",
+    "build-84d809ece5e6/assets/narrate.webp",
+    "build-84d809ece5e6/assets/prepare.webp",
+    "build-84d809ece5e6/assets/review.webp",
+    "build-84d809ece5e6/assets/save.webp",
+    "build-84d809ece5e6/assets/splash.webp",
+    "build-84d809ece5e6/browser-api.js",
+    "build-84d809ece5e6/core-worker.js",
+    "build-84d809ece5e6/core.wasm",
+    "build-84d809ece5e6/model-worker.js",
+    "build-84d809ece5e6/ort-wasm-simd-threaded.mjs",
+    "build-84d809ece5e6/ort-wasm-simd-threaded.wasm",
+    "build-84d809ece5e6/style.css",
+    "build-84d809ece5e6/voice-worker.js",
+    "build-84d809ece5e6/wasm_exec.js"
+  ]
+}

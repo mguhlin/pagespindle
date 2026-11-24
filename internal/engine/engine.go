@@ -232,6 +232,8 @@ func (e *Engine) Prepare(ctx context.Context, id int, text string) (*Edit, error
 	return &edit, nil
 }
 func (e *Engine) Speak(ctx context.Context, text, output string, speed float64) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
 	if !e.Status().Speech {
 		return errors.New("The matching speech runtime or common voice pack is missing")
 	}
@@ -239,11 +241,19 @@ func (e *Engine) Speak(ctx context.Context, text, output string, speed float64) 
 		return errors.New("Use a nonempty speech chunk up to 32 KiB")
 	}
 	v := e.voice()
-	c := child(ctx, e.path("speech", "pagespindle-speech"), filepath.Join(v, "en_US-ljspeech-high.onnx"), filepath.Join(v, "tokens.txt"), filepath.Join(v, "espeak-ng-data"), output, fmt.Sprintf("%.2f", speed))
+	f, err := os.OpenFile(output, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		return errors.New("Cannot create private audio output; check free disk space")
+	}
+	c := child(ctx, e.path("speech", "pagespindle-speech"), fmt.Sprintf("%.2f", speed))
+	c.Dir = v
 	c.Stdin = strings.NewReader(text)
-	c.Stdout = io.Discard
+	c.Stdout = f
 	c.Stderr = io.Discard
-	if err := c.Run(); err != nil {
+	runErr := c.Run()
+	closeErr := f.Close()
+	if runErr != nil || closeErr != nil {
+		os.Remove(output)
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}

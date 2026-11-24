@@ -1,0 +1,9 @@
+{
+  "name": "loglevel",
+  "version": "1.9.2",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pimterry/loglevel.git"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@protobufjs/float",
+  "version": "1.0.2",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcodeIO/protobuf.js.git"
+  }
+}

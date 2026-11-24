@@ -1,0 +1,10 @@
+{
+  "name": "@types/filesystem",
+  "version": "0.0.36",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+    "directory": "types/filesystem"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@mlc-ai/web-runtime",
+  "version": "0.28.0-dev2",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apache/tvm/tree/main/web"
+  }
+}

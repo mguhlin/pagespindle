@@ -1,0 +1,3 @@
+importScripts('./wasm_exec.js');
+let ready=(async()=>{const go=new Go();const response=await fetch('./core.wasm');const bytes=await response.arrayBuffer();const result=await WebAssembly.instantiate(bytes,go.importObject);go.run(result.instance);while(!self.pagespindleCore)await new Promise(r=>setTimeout(r,1));})();
+self.onmessage=async e=>{const {id,request}=e.data;try{await ready;const result=JSON.parse(self.pagespindleCore(JSON.stringify(request)));self.postMessage({id,result});}catch{self.postMessage({id,result:{error:'The browser import worker failed. Your existing text is unchanged.'}})}};

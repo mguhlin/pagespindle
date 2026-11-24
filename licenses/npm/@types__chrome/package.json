@@ -1,0 +1,10 @@
+{
+  "name": "@types/chrome",
+  "version": "0.0.266",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+    "directory": "types/chrome"
+  }
+}

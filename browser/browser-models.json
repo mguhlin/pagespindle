@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "text": [
+    {
+      "id": "Qwen3-0.6B-q4f32_1-MLC",
+      "url": "https://huggingface.co/mlc-ai/Qwen3-0.6B-q4f32_1-MLC/resolve/9b4f0b05b08c692ea86fe151ea878406ad22f428/",
+      "lib": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/5b7251f3bdce957be2a7bf73a6f6c560d9874df4/web-llm-models/v0_2_87/base/Qwen3-0.6B-q4f32_1_cs1k-webgpu.wasm",
+      "integrity": {
+        "config": "sha256-5S/NMvOOqp2Ihv0+ng8PEzNCJnhKn9j02yrP//AWU88=",
+        "model_lib": "sha256-YTxOjXlIzzVcAz6GGLeSXDHvNB/cbsOK77sQVAJLk/c=",
+        "tokenizer": {
+          "tokenizer.json": "sha256-rrEzB6cazY/oGGHZStVKtonfdzMYgJ7tPL55S0SS2uQ=",
+          "vocab.json": "sha256-yhDX6fs+0YV13R4neiV5wW0QjjLydDloSvoOELFECRA=",
+          "merges.txt": "sha256-iDHk8aBERxNA98CoPXvXEwaluGfpX9hw900MUwipBNU=",
+          "tokenizer_config.json": "sha256-u8LAieO++HU/YzSMEFlXZ76JmLxsp8fryq2jRtQB+6g="
+        },
+        "onFailure": "error"
+      }
+    },
+    {
+      "id": "Qwen3-0.6B-q4f16_1-MLC",
+      "url": "https://huggingface.co/mlc-ai/Qwen3-0.6B-q4f16_1-MLC/resolve/8c14ce481d4c692769976ad52afea453a102df19/",
+      "lib": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/5b7251f3bdce957be2a7bf73a6f6c560d9874df4/web-llm-models/v0_2_87/base/Qwen3-0.6B-q4f16_1_cs1k-webgpu.wasm",
+      "integrity": {
+        "config": "sha256-GQpRxWuaB6jYchJm+ORZvNGxaJvN/ylHlc0r/6ID/y0=",
+        "model_lib": "sha256-snd5f/8SQLqrpngre6Zxg0+GECK5KDyT/LS7fAbQNz0=",
+        "tokenizer": {
+          "tokenizer.json": "sha256-rrEzB6cazY/oGGHZStVKtonfdzMYgJ7tPL55S0SS2uQ=",
+          "vocab.json": "sha256-yhDX6fs+0YV13R4neiV5wW0QjjLydDloSvoOELFECRA=",
+          "merges.txt": "sha256-iDHk8aBERxNA98CoPXvXEwaluGfpX9hw900MUwipBNU=",
+          "tokenizer_config.json": "sha256-u8LAieO++HU/YzSMEFlXZ76JmLxsp8fryq2jRtQB+6g="
+        },
+        "onFailure": "error"
+      }
+    },
+    {
+      "id": "Qwen3-1.7B-q4f16_1-MLC",
+      "url": "https://huggingface.co/mlc-ai/Qwen3-1.7B-q4f16_1-MLC/resolve/80b3abcec6c3b3f5355dc0cc99cc4fb578f192bc/",
+      "lib": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/5b7251f3bdce957be2a7bf73a6f6c560d9874df4/web-llm-models/v0_2_87/base/Qwen3-1.7B-q4f16_1_cs1k-webgpu.wasm",
+      "integrity": {
+        "config": "sha256-9ecmtQNj/6roPwY61A3bZzlOfaCQ0lHPVJpp1fiZ1Yo=",
+        "model_lib": "sha256-Nj9Nu3ifBRjlIpXR9GhdLWH+rkrE4qapViHkrylFC9c=",
+        "tokenizer": {
+          "tokenizer.json": "sha256-rrEzB6cazY/oGGHZStVKtonfdzMYgJ7tPL55S0SS2uQ=",
+          "vocab.json": "sha256-yhDX6fs+0YV13R4neiV5wW0QjjLydDloSvoOELFECRA=",
+          "merges.txt": "sha256-iDHk8aBERxNA98CoPXvXEwaluGfpX9hw900MUwipBNU=",
+          "tokenizer_config.json": "sha256-WnMD/LGift5jE0osvWHVKCwkfKbXac5HRtT/oSSu3WM="
+        },
+        "onFailure": "error"
+      }
+    }
+  ],
+  "voice": {
+    "model": "voice/ljspeech-a1bbf9c4094d8279.onnx",
+    "sha256": "a1bbf9c4094d827945cae53b0cdbfc511e5e97ea63761d426cbbed3df7957603",
+    "bytes": 38107117,
+    "config": "voice/ljspeech-config.json",
+    "config_sha256": "7e1f4634af596d83cca997fb7a931ba80b70f8a316a2655ee69c55365e0ace14",
+    "config_bytes": 4970
+  }
+}

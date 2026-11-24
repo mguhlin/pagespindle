@@ -1,0 +1,9 @@
+{
+  "name": "tslib",
+  "version": "2.9.1",
+  "license": "0BSD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/tslib.git"
+  }
+}

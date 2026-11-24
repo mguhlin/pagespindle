@@ -29,7 +29,7 @@ func TestSourceAndReviewRoundtrip(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	if copy.Source != source || !strings.Contains(Master(copy), "# Notes\n\nA unique sidebar.") {
+	if copy.Source != source || !strings.Contains(Master(copy), "# Notes\n\n## Test\n\nA unique sidebar.") {
 		t.Fatal("source/notes lost")
 	}
 	copy.Blocks[1].Source = "substituted"

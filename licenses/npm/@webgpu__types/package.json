@@ -1,0 +1,9 @@
+{
+  "name": "@webgpu/types",
+  "version": "0.1.74",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpuweb/types.git"
+  }
+}
