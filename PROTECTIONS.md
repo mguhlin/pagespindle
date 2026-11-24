@@ -19,12 +19,12 @@ Release evidence belongs in `VALIDATION.md`. A passing test is scoped evidence; 
 
 ## Browser platform contract
 
-The no-install browser edition compiles the same Go book/source/review core to WebAssembly. Workers run WebLLM/Qwen on WebGPU and the LJ Speech model on ONNX Runtime Web CPU/WASM. The browser needs HTTPS/localhost, workers, WebAssembly, Cache Storage/IndexedDB, and a usable WebGPU adapter for AI. Float16 options require that GPU feature; the default uses float32. Browser AI memory guidance is approximately 2 GB available GPU memory plus system headroom, rather than a guarantee for all devices. Explicit setup downloads models; inference does not send manuscript text to a server.
+The no-install browser edition compiles the same Go book/source/review core to WebAssembly. Workers run WebLLM/Qwen on WebGPU and the LJ Speech model on ONNX Runtime Web CPU/WASM. The browser needs HTTPS/localhost, workers, WebAssembly, Cache Storage/IndexedDB, and a usable WebGPU adapter for AI. Float16 options require that GPU feature; the default uses float32. Browser AI memory guidance is approximately 3 GB available GPU memory plus system headroom, rather than a guarantee for all devices. Explicit setup downloads models; inference does not send manuscript text to a server.
 
 | Task | Desktop | No-install browser | Recovery or limit |
 | --- | --- | --- | --- |
 | Paste; TXT/MD/EPUB/searchable PDF import | SUPPORTED | SUPPORTED, same Go logic | 16 MiB input, 2 MiB extracted text; reject invalid input without replacing current work. |
-| Local AI cleanup proposals | SUPPORTED, CPU Qwen3-1.7B | SUPPORTED on compatible WebGPU hardware; compact default | Original retained; complete structured proposals only; every passage needs review. |
+| Local AI cleanup proposals | SUPPORTED, CPU Qwen3-1.7B | SUPPORTED on compatible WebGPU hardware; Qwen3-1.7B | Original retained; complete structured proposals only; every passage needs review. |
 | Manual preparation/chatbot prompt | SUPPORTED | SUPPORTED | Hosted chatbot is a separate user-directed transfer. |
 | Notes/review/project backup | SUPPORTED | SUPPORTED, same format/core | Refresh requires deliberate backup/reopen. |
 | English WAV chapters/ZIP/playlist | SUPPORTED | SUPPORTED | Native 300,000 text bytes/768 MiB audio; browser 100,000/96 MiB. |

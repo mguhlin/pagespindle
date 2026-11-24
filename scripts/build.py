@@ -39,7 +39,7 @@ def main():
  for p in sorted(stage.rglob('*')):
   if p.is_symlink():manifest.append({'path':p.relative_to(stage).as_posix(),'symlink':os.readlink(p)})
   elif p.is_file():manifest.append({'path':p.relative_to(stage).as_posix(),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size})
- (stage/'INVENTORY.json').write_text(json.dumps({'target':target,'files':manifest},indent=2)+'\n')
+ (stage/'INVENTORY.json').write_text(json.dumps({'schema':1,'target':target,'source_revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'go_toolchain':subprocess.check_output(['go','version'],text=True).strip(),'files':manifest},indent=2)+'\n')
  archive=ROOT/'dist'/('pagespindle-'+target+'.zip')
  with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
   for p in sorted(stage.rglob('*')):

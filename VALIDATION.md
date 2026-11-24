@@ -26,3 +26,19 @@ Windows x64, macOS Intel, macOS Apple Silicon, and Linux x64 each have a native 
 - The source remains public, with exact module and engine identities. No independent security audit, complete software bill of materials, publisher signing, or notarization is claimed.
 
 Release decision: **CONDITIONAL for evaluation with authorized, nonsensitive text**, limited to the checks recorded for each package. Additional qualification is needed before sensitive school use or a trusted signed distribution channel.
+
+## Reproducible checks
+
+| Check | Result and scope |
+| --- | --- |
+| Go unit/regression tests, vet, race | PASS on local Linux. Source identity/Unicode, bounded input, EPUB spine order and traversal, project roundtrip, note grouping, review gate, host/origin/session denial, cancel/clear and stale-worker checks. |
+| Actual native model and voice | PASS on Windows x64, macOS Intel/ARM and Linux x64 hosted runners. Real Qwen structured proposal, real 22,050 Hz PCM through a Unicode filename, and owner-pipe EOF shutdown. See the Native package checks run tied to the release source. |
+| Native browser workspace | PASS on local Linux Chrome: prompt copy, exact original, backup/reopen, real speech preview, WAV chapter ZIP, listening-text export, clear, 320 CSS-pixel reflow and axe checks. Real M4B export decoded by FFprobe with two chapters and nonzero duration. |
+| Browser local AI | PASS on Linux Chrome 158 with NVIDIA RTX 2060 through WebGPU, Qwen3-1.7B q4f32. The clean pilot retained its complete prose and 9:00/5:00 numbers; proposals remained unreviewed. Cached offline reload and another real preparation passed. |
+| Browser narration and recovery | PASS on local Chrome: actual ONNX voice/phonemizer, preview decode, WAV ZIP, text/project exports, clear, backup reimport, offline shell reload and real offline narration, axe checks and 320 CSS-pixel reflow. |
+| Observed browser transfers | PASS for synthetic tests: model/asset GET requests, no manuscript POST or document-body upload. This is scoped observation, not an independent network audit. |
+| Dependency checks | Go vulnerability check reported no vulnerabilities; npm audit reported zero vulnerabilities with the pinned lock. These results are not a permanent security guarantee. |
+| Package identity | Platform ZIP inventory compares every staged component to archive bytes; common-model packaging verifies its complete inventory and hashes. Release checksums and artifact source revisions identify published downloads. |
+| Human AT, physical installations, signing | NOT_RUN. Keyboard/axe/reflow checks do not establish screen-reader compatibility or WCAG conformance. |
+
+Browser first model startup includes substantial downloads and GPU compilation. A software-only WebGPU renderer exceeded the preparation limit in the pilot; use supported hardware acceleration or the desktop CPU route. The float16 alternative additionally requires `shader-f16` and has not been qualified on the local adapter, which did not expose that feature. The default float32 path was exercised. A small invented pilot is not a whole-book completeness or pronunciation evaluation.

@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['cmd/**', 'internal/**', 'native/**', 'scripts/**', 'go.mod', 'go.sum', 'dependencies.json', '.github/workflows/native.yml']
+    paths: ['cmd/**', 'internal/**', 'native/**', 'scripts/**', 'go.mod', 'go.sum', 'dependencies.json', 'licenses/**', 'README.md', 'THIRD_PARTY.md', 'PROTECTIONS.md', 'VALIDATION.md', '.github/workflows/native.yml']
 permissions:
   contents: read
 jobs:
