@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "llama_version": "b12681",
+  "sherpa_version": "v1.12.35",
+  "targets": {
+    "linux-amd64": {
+      "llama": {
+        "name": "llama-b12681-bin-ubuntu-x64.tar.gz",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12681/llama-b12681-bin-ubuntu-x64.tar.gz",
+        "sha256": "61f04060b691efc99708ff9ca59564a24de3073543f35b1c084e1b8cb73e6da0",
+        "size": 23377794
+      },
+      "speech": {
+        "name": "sherpa-onnx-v1.12.35-linux-x64-shared.tar.bz2",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.35/sherpa-onnx-v1.12.35-linux-x64-shared.tar.bz2",
+        "sha256": "34b1066d47a3a9f283af24e555899dfbe5bb62f7749dee8bc023e686dcaee1b7",
+        "size": 30075941
+      }
+    },
+    "darwin-amd64": {
+      "llama": {
+        "name": "llama-b12681-bin-macos-x64.tar.gz",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12681/llama-b12681-bin-macos-x64.tar.gz",
+        "sha256": "1e1afbe507aaaf080ba97a1afe2913657fc0e84510b49a3d764cc33326d4bdcb",
+        "size": 12540864
+      },
+      "speech": {
+        "name": "sherpa-onnx-v1.12.35-osx-x64-shared.tar.bz2",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.35/sherpa-onnx-v1.12.35-osx-x64-shared.tar.bz2",
+        "sha256": "80d44a1627e6fae6bd363f56b8bb447079b6b2214beda191c790087ca1662cdd",
+        "size": 36866146
+      }
+    },
+    "darwin-arm64": {
+      "llama": {
+        "name": "llama-b12681-bin-macos-arm64.tar.gz",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12681/llama-b12681-bin-macos-arm64.tar.gz",
+        "sha256": "7d1e633ba29c9c2171149ef5b8e9d0e4c13d3599388d7883169369c18f2e9c23",
+        "size": 16820137
+      },
+      "speech": {
+        "name": "sherpa-onnx-v1.12.35-osx-arm64-shared.tar.bz2",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.35/sherpa-onnx-v1.12.35-osx-arm64-shared.tar.bz2",
+        "sha256": "03713def1df1a47a42e81259d20c6d375ae78a48e351724ca2dd70c16f57f10d",
+        "size": 32823417
+      }
+    },
+    "windows-amd64": {
+      "llama": {
+        "name": "llama-b12681-bin-win-cpu-x64.zip",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12681/llama-b12681-bin-win-cpu-x64.zip",
+        "sha256": "443e41b8216b71e7a8e443fba4bd9502c0b64e9ba226112f47cb074c7a0f29cf",
+        "size": 25216175
+      },
+      "speech": {
+        "name": "sherpa-onnx-v1.12.35-win-x64-shared-MT-Release.tar.bz2",
+        "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.35/sherpa-onnx-v1.12.35-win-x64-shared-MT-Release.tar.bz2",
+        "sha256": "ce673db9b5f75bd06092a6d674ca1ab0874b9e294b66841a9c7b261f9a4ec75c",
+        "size": 21150238
+      }
+    }
+  },
+  "common": {
+    "model": {
+      "name": "Qwen3-1.7B-Q8_0.gguf",
+      "url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/90862c4b9d2787eaed51d12237eafdfe7c5f6077/Qwen3-1.7B-Q8_0.gguf",
+      "sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+      "size": 1834426016
+    },
+    "voice": {
+      "name": "vits-piper-en_US-ljspeech-high-int8.tar.bz2",
+      "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-ljspeech-high-int8.tar.bz2",
+      "sha256": "916b2526d4ea191f9710bd2753698ac97926ec38eade867408d3f5fd422ca285",
+      "size": 33886472
+    }
+  }
+}
