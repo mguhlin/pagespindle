@@ -33,6 +33,8 @@ jobs:
       - name: Real local model and voice
         shell: bash
         run: PAGESPINDLE_RUNTIME="$PWD" go test -v -run TestRealOfflineEngines ./internal/engine
+      - name: Extracted package model and narration
+        run: python scripts/smoke_package.py ${{ matrix.target }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: pagespindle-${{ matrix.target }}

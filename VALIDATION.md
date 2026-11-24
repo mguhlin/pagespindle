@@ -22,7 +22,8 @@ Windows x64, macOS Intel, macOS Apple Silicon, and Linux x64 each have a native 
 - The bundled voice is English. Narration is limited to 300,000 UTF-8 bytes and 768 MiB of WAV output per job; save long books in parts. WAV chapter ZIPs include text and a playlist. MP3/M4B need a separately installed local FFmpeg.
 - Models can omit or alter text; structured output, matching endpoints, and word counts do not certify fidelity. Side-by-side review and explicit approval remain essential.
 - Refresh/close loses unsaved browser work. Save the project backup first and reopen it through the file selector. A refreshed desktop tab needs the private session URL from the launcher again.
-- Normal clear/close cancels jobs and removes app-owned temporary audio. Abrupt power loss can leave temporary files in the OS temporary directory. No forensic erasure or removal of independent saved/backed-up copies is promised.
+- Clear local work or a graceful Ctrl+C stop of the desktop launcher cancels jobs and removes app-owned temporary audio. Closing only its browser tab does not stop the launcher. Abrupt power loss can leave temporary files in the OS temporary directory. No forensic erasure or removal of independent saved/backed-up copies is promised.
+- Windows local AI needs the separately installed Microsoft Visual C++ x64 runtime; it is present on the test runner. Clean OS installation remains unqualified.
 - The source remains public, with exact module and engine identities. No independent security audit, complete software bill of materials, publisher signing, or notarization is claimed.
 
 Release decision: **CONDITIONAL for evaluation with authorized, nonsensitive text**, limited to the checks recorded for each package. Additional qualification is needed before sensitive school use or a trusted signed distribution channel.

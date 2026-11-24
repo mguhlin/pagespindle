@@ -27,7 +27,7 @@ def main():
  for role in ['llama','speech']:
   for p in (runtime_dest/role).rglob('*'):
    if p.is_file() and not p.is_symlink():
-    if role=='llama' and p.name.startswith('llama-') and p.name not in {'llama-server','llama-server.exe'}:p.unlink()
+    if role=='llama' and ((p.suffix.lower()=='.exe' and p.name!='llama-server.exe') or (not target.startswith('windows') and p.name.startswith('llama-') and '.' not in p.name and p.name!='llama-server')):p.unlink()
     elif role=='speech' and p.parent.name=='bin' and p.suffix.lower()!='.dll':p.unlink()
     elif p.suffix in {'.obj','.lib','.a','.h','.hpp'}:p.unlink()
  for name in ['LICENSE','README.md','PROTECTIONS.md','THIRD_PARTY.md','VALIDATION.md','dependencies.json']:shutil.copy2(ROOT/name,stage/name)

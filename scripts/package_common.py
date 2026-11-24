@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Bundle common model data and exact-source archives, with stable ZIP metadata."""
-import hashlib,json,shutil,urllib.request,zipfile
+import argparse,hashlib,json,shutil,urllib.request,zipfile
 from pathlib import Path
+parser=argparse.ArgumentParser();parser.add_argument('--source-only',action='store_true');args=parser.parse_args()
 ROOT=Path(__file__).resolve().parents[1];dist=ROOT/'dist';dist.mkdir(exist_ok=True);source_dir=ROOT/'.cache/corresponding-source';source_dir.mkdir(exist_ok=True)
 sources=[('offline-speech-9fdb771e-source.tar.gz','https://codeload.github.com/dimacurrentai/offline-speech/tar.gz/9fdb771e5bfeec518ed7e9f7afc0f27985623a97'),('espeak-ng-browser-890071ff.tar.gz','https://codeload.github.com/espeak-ng/espeak-ng/tar.gz/890071ff30231883d761e4d59edabd6d69faf159'),('sherpa-onnx-v1.12.35.tar.gz','https://codeload.github.com/k2-fsa/sherpa-onnx/tar.gz/refs/tags/v1.12.35'),('piper-phonemize-78a788e0.zip','https://codeload.github.com/csukuangfj/piper-phonemize/zip/78a788e0b719013401572d70fef372e77bff8e43'),('espeak-ng-7251208e.zip','https://codeload.github.com/csukuangfj/espeak-ng/zip/7251208ee427ef87e94f39d0e99b15d287224ed6'),('llama.cpp-b12681.tar.gz','https://codeload.github.com/ggml-org/llama.cpp/tar.gz/refs/tags/b12681')]
 def add(z,p,name):
@@ -20,6 +21,8 @@ for name,url in sources:
 with zipfile.ZipFile(dist/'pagespindle-speech-and-engine-source.zip','w')as z:
  for row in inventory:add(z,source_dir/row['file'],'PageSpindle-source/'+row['file'])
  for name in ['SOURCE_ARCHIVES.json','THIRD_PARTY.md','LICENSE','native/speech-worker.c','scripts/build.py','dependencies.json']:add(z,ROOT/name,'PageSpindle-source/'+name)
+if args.source_only:
+ print('Packaged corresponding source only',flush=True);raise SystemExit(0)
 files=sorted(p for p in (ROOT/'models').rglob('*') if p.is_file())+sorted(p for p in (ROOT/'licenses').rglob('*') if p.is_file())+[ROOT/'THIRD_PARTY.md']
 rows=[]
 with zipfile.ZipFile(dist/'pagespindle-common-models.zip','w',allowZip64=True)as z:
