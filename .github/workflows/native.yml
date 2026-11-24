@@ -1,0 +1,41 @@
+name: Native package checks
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['cmd/**', 'internal/**', 'native/**', 'scripts/**', 'go.mod', 'go.sum', 'dependencies.json', '.github/workflows/native.yml']
+permissions:
+  contents: read
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runner: ubuntu-24.04, target: linux-amd64}
+          - {runner: windows-2022, target: windows-amd64}
+          - {runner: macos-15-intel, target: darwin-amd64}
+          - {runner: macos-15, target: darwin-arm64}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.4'
+      - run: python scripts/prepare_runtime.py --target ${{ matrix.target }} --common
+      - run: go test ./...
+      - run: go vet ./...
+      - run: python scripts/build.py --target ${{ matrix.target }}
+      - run: python scripts/verify_package.py ${{ matrix.target }}
+      - name: Real local model and voice
+        shell: bash
+        run: PAGESPINDLE_RUNTIME="$PWD" go test -v -run TestRealOfflineEngines ./internal/engine
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pagespindle-${{ matrix.target }}
+          path: dist/pagespindle-${{ matrix.target }}.zip
+          if-no-files-found: error
+          retention-days: 14

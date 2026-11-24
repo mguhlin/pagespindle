@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/mguhlin/pagespindle/internal/app"
 	"github.com/mguhlin/pagespindle/internal/book"
+	"github.com/mguhlin/pagespindle/internal/engine"
 	"io"
 	"net"
 	"net/http"
@@ -20,6 +21,9 @@ import (
 )
 
 func main() {
+	if os.Getenv("PAGESPINDLE_ENGINE_SUPERVISOR") == "1" {
+		os.Exit(engine.Supervise(os.Stdin))
+	}
 	extract := flag.Bool("extract-pdf", false, "internal bounded PDF extraction worker")
 	root := flag.String("assets", "", "folder containing runtime/ and models/")
 	noBrowser := flag.Bool("no-browser", false, "print the local URL without opening a browser")

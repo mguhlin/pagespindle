@@ -93,9 +93,16 @@ func SafeName(s string) string {
 	if s == "" {
 		s = "Listening-Edition"
 	}
+	reserved := strings.ToUpper(s)
+	if reserved == "CON" || reserved == "PRN" || reserved == "AUX" || reserved == "NUL" || regexp.MustCompile(`^(COM|LPT)[1-9]$`).MatchString(reserved) {
+		s = "Book-" + s
+	}
 	return s
 }
 func Validate(d Document) error {
+	if len([]rune(d.Title)) > 120 || len([]rune(d.Author)) > 200 {
+		return errors.New("Title or author is too long")
+	}
 	if d.Schema != 1 {
 		return errors.New("Unsupported project format")
 	}

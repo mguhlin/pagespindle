@@ -27,6 +27,7 @@ type Engine struct {
 	cmd      *exec.Cmd
 	done     chan error
 	url, key string
+	control  *os.File
 }
 type Status struct {
 	AI       bool   `json:"ai"`
@@ -65,13 +66,14 @@ func (e *Engine) Status() Status {
 }
 func child(ctx context.Context, program string, args ...string) *exec.Cmd {
 	c := exec.CommandContext(ctx, program, args...)
+	c.Env = cleanEnvironment()
 	configureProcess(c)
 	c.Cancel = func() error { return killProcess(c) }
 	c.WaitDelay = 3 * time.Second
 	return c
 }
 func client(timeout time.Duration) *http.Client {
-	return &http.Client{Timeout: timeout, Transport: &http.Transport{Proxy: nil, MaxIdleConnsPerHost: 1}, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("Redirects are disabled") }}
+	return &http.Client{Timeout: timeout, Transport: &http.Transport{Proxy: nil, MaxIdleConnsPerHost: 1, DisableKeepAlives: true}, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("Redirects are disabled") }}
 }
 func (e *Engine) start(ctx context.Context) error {
 	e.mu.Lock()
@@ -99,15 +101,33 @@ func (e *Engine) start(ctx context.Context) error {
 	}
 	e.key = hex.EncodeToString(key)
 	e.url = fmt.Sprintf("http://127.0.0.1:%d", port)
-	c := child(context.Background(), e.path("llama", "llama-server"), "-m", e.model(), "--host", "127.0.0.1", "--port", fmt.Sprint(port), "--api-key", e.key, "--ctx-size", "4096", "--parallel", "1", "--threads", "4", "--no-webui", "--no-mmap", "--log-disable")
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+	c := child(context.Background(), exe)
+	c.Env = append(c.Env, "PAGESPINDLE_ENGINE_SUPERVISOR=1")
+	c.Stdin = reader
 	c.Stdout = io.Discard
 	c.Stderr = io.Discard
 	if err = c.Start(); err != nil {
+		reader.Close()
+		writer.Close()
 		return errors.New("The local text engine could not start; check this platform's runtime requirements")
 	}
 	e.cmd = c
+	reader.Close()
+	e.control = writer
 	e.done = make(chan error, 1)
 	go func() { e.done <- c.Wait(); close(e.done) }()
+	if err = json.NewEncoder(writer).Encode(supervisorSpec{Root: e.Root, Port: port, Key: e.key}); err != nil {
+		e.stopLocked()
+		return errors.New("The model supervisor could not initialize")
+	}
 	timeout := time.NewTimer(3 * time.Minute)
 	defer timeout.Stop()
 	ticker := time.NewTicker(250 * time.Millisecond)
@@ -115,14 +135,16 @@ func (e *Engine) start(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
-			killProcess(c)
-			e.cmd = nil
+			e.stopLocked()
 			return ctx.Err()
 		case <-timeout.C:
-			killProcess(c)
-			e.cmd = nil
+			e.stopLocked()
 			return errors.New("Local model startup timed out; close other memory-heavy programs and retry")
 		case <-e.done:
+			if e.control != nil {
+				e.control.Close()
+				e.control = nil
+			}
 			e.cmd = nil
 			return errors.New("The local text engine stopped during startup")
 		case <-ticker.C:
@@ -140,7 +162,25 @@ func (e *Engine) Close() {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	if e.cmd != nil {
-		killProcess(e.cmd)
+		e.stopLocked()
+	}
+}
+
+func (e *Engine) stopLocked() {
+	if e.control != nil {
+		e.control.Close()
+		e.control = nil
+	}
+	if e.cmd != nil {
+		select {
+		case <-e.done:
+		case <-time.After(3 * time.Second):
+			killProcess(e.cmd)
+			select {
+			case <-e.done:
+			case <-time.After(time.Second):
+			}
+		}
 		e.cmd = nil
 	}
 }
