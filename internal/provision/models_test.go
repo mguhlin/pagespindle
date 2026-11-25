@@ -49,7 +49,7 @@ func TestExtractVerifiedModelsAndTamper(t *testing.T) {
 	}
 }
 func TestExtractRejectsTraversalAndCorruption(t *testing.T) {
-	for _, name := range []string{"../../outside", "/outside", "voice/../outside", "voice\\outside"} {
+	for _, name := range []string{"../../outside", "/outside", "voice/../outside", "voice\\outside", "C:/outside", "voice/file:stream"} {
 		t.Run(name, func(t *testing.T) {
 			stage := t.TempDir()
 			sentinel := filepath.Join(stage, "outside")
@@ -89,5 +89,28 @@ func TestActualReleasedPack(t *testing.T) {
 	}
 	if !Ready(filepath.Join(stage, "models")) {
 		t.Fatal("real installed pack failed verification")
+	}
+}
+
+func TestCancelSetupPreservesExistingModels(t *testing.T) {
+	parent := t.TempDir()
+	dir := filepath.Join(parent, "models")
+	os.Mkdir(dir, 0700)
+	sentinel := filepath.Join(dir, "original.txt")
+	os.WriteFile(sentinel, []byte("preserve"), 0600)
+	m := New(dir)
+	m.Start()
+	m.Cancel()
+	m.Close()
+	if m.Snapshot().Phase != "cancelled" {
+		t.Fatal("cancel state missing")
+	}
+	b, _ := os.ReadFile(sentinel)
+	if string(b) != "preserve" {
+		t.Fatal("existing model data changed")
+	}
+	entries, _ := os.ReadDir(parent)
+	if len(entries) != 1 {
+		t.Fatal("cancel left model staging behind")
 	}
 }

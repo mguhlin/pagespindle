@@ -29,6 +29,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libwebkitgtk-6.0-dev xvfb xauth dbus-x11 gstreamer1.0-plugins-base gstreamer1.0-plugins-good
       - uses: msys2/setup-msys2@3c51bf698df1e37b2261f53cb67797b97761185c
+        id: msys
         if: runner.os == 'Windows'
         with:
           msystem: MINGW64
@@ -36,7 +37,9 @@ jobs:
       - name: Add native Windows compiler
         if: runner.os == 'Windows'
         shell: pwsh
-        run: '"C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
+        run: |
+          "${{ steps.msys.outputs.msys2-location }}\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "MSYS2_ROOT=${{ steps.msys.outputs.msys2-location }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - run: python scripts/prepare_runtime.py --target ${{ matrix.target }} --common
       - run: go test ./...
       - run: go vet ./...

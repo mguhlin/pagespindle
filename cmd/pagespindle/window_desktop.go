@@ -69,7 +69,7 @@ func runNativeWindow(url string, server *app.Server, start func(), stop func()) 
 		}
 		stop()
 	}
-	native := application.New(application.Options{Name: "PageSpindle", Description: "Spin text into listening", Logger: slog.New(slog.NewTextHandler(io.Discard, nil)), DisableDefaultSignalHandler: false, OnShutdown: shutdown, Windows: win, ShouldQuit: func() bool { return confirm() }, Mac: application.MacOptions{ApplicationShouldTerminateAfterLastWindowClosed: true}})
+	native := application.New(application.Options{Icon: nativeIcon, Name: "PageSpindle", Description: "Spin text into listening", Logger: slog.New(slog.NewTextHandler(io.Discard, nil)), DisableDefaultSignalHandler: false, OnShutdown: shutdown, Windows: win, ShouldQuit: func() bool { return confirm() }, Mac: application.MacOptions{ApplicationShouldTerminateAfterLastWindowClosed: true}})
 	window := native.Window.NewWithOptions(application.WebviewWindowOptions{Name: "PageSpindle", Title: "PageSpindle", URL: url, Width: 1280, Height: 900, MinWidth: 620, MinHeight: 540, EnableFileDrop: false})
 	server.Desktop = &app.DesktopHooks{OpenHelp: native.Browser.OpenURL, ChooseSave: func(name string) (string, error) {
 		return native.Dialog.SaveFile().AttachToWindow(window).SetFilename(name).SetMessage("Save a new PageSpindle file. Existing files are preserved.").PromptForSingleSelection()

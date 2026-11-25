@@ -21,7 +21,7 @@ def main():
  stage=ROOT/'dist'/target/'PageSpindle'
  if stage.exists():shutil.rmtree(stage)
  stage.mkdir(parents=True);env=dict(os.environ,CGO_ENABLED='0');run(['go','build','-trimpath','-ldflags=-s -w','-o',stage/('pagespindle-worker'+exe),'./cmd/pagespindle'],env=env)
- env=dict(os.environ,CGO_ENABLED='1');flags='-s -w'+(' -H windowsgui'if target.startswith('windows')else'');run(['go','build','-tags','desktop','-trimpath','-ldflags='+flags,'-o',stage/('pagespindle'+exe),'./cmd/pagespindle'],env=env)
+ env=dict(os.environ,CGO_ENABLED='1');flags='-s -w'+(' -H windowsgui'if target.startswith('windows')else'');run(['go','build','-tags','desktop,production','-trimpath','-ldflags='+flags,'-o',stage/('pagespindle'+exe),'./cmd/pagespindle'],env=env)
  runtime_dest=stage/'runtime'/target
  # Retain the pinned distributions, their loaders/resources and native library modes.
  shutil.copytree(ROOT/'runtime'/target,runtime_dest,symlinks=True)

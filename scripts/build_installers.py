@@ -27,8 +27,12 @@ elif target.startswith('darwin'):
   if item.name=='pagespindle':continue
   if item.is_dir():shutil.copytree(item,resources/item.name,symlinks=True)
   else:shutil.copy2(item,resources/item.name)
+ iconset=dist/target/'PageSpindle.iconset';iconset.mkdir(exist_ok=True)
+ for size in [16,32,128,256,512]:
+  for scale in [1,2]:run(['sips','-z',str(size*scale),str(size*scale),ROOT/'artwork/save.png','--out',iconset/('icon_'+str(size)+'x'+str(size)+('@2x'if scale==2 else'')+'.png')])
+ run(['iconutil','-c','icns',iconset,'-o',resources/'PageSpindle.icns'])
  import plistlib
- with (contents/'Info.plist').open('wb')as f:plistlib.dump({'CFBundleIdentifier':'org.mguhlin.pagespindle','CFBundleName':'PageSpindle','CFBundleDisplayName':'PageSpindle','CFBundleExecutable':'pagespindle','CFBundlePackageType':'APPL','CFBundleShortVersionString':'0.2.0','CFBundleVersion':'2','LSMinimumSystemVersion':'12.0','NSHighResolutionCapable':True},f)
+ with (contents/'Info.plist').open('wb')as f:plistlib.dump({'CFBundleIconFile':'PageSpindle.icns','CFBundleIdentifier':'org.mguhlin.pagespindle','CFBundleName':'PageSpindle','CFBundleDisplayName':'PageSpindle','CFBundleExecutable':'pagespindle','CFBundlePackageType':'APPL','CFBundleShortVersionString':'0.2.0','CFBundleVersion':'2','LSMinimumSystemVersion':'12.0','NSHighResolutionCapable':True},f)
  # Ad-hoc integrity only: no Developer ID, no notarization claim.
  run(['codesign','--force','--deep','--sign','-',app]);run(['codesign','--verify','--deep','--strict',app])
  run(['pkgbuild','--root',payload,'--identifier','org.mguhlin.pagespindle','--version','0.2.0','--install-location','/',dist/('pagespindle-'+target+'.pkg')])

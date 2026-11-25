@@ -9,9 +9,9 @@ PageSpindle's primary task is authorized text → reviewable preparation → loc
 | [Security](https://mguhlin.github.io/vcc/securevcc/securevcc.md) | Loopback binding; session key, exact host/origin checks, bounded inputs, safe DOM rendering, no generic read/write/execute bridge. Untrusted documents/model output cannot grant authority. | Allowed and denied requests; malformed/oversized imports; stale jobs; safe output names; no outside-tree writes. |
 | [Rescue and recoverable delivery](https://mguhlin.github.io/vcc/rescue/VIBE_CODE_RESCUE.md) | Preserve source; proposals can be reviewed optionally; cancellation, truthful errors, saved project backups and bounded progress. Pinned engines, model identities and package inventories. | Save/reopen, failure/retry, cancelled jobs, reproducible build, actual extracted-package operation. |
 
-[Go App Builder](https://mguhlin.github.io/vcc/skills/go-app-builder/SKILL.md) governs separation between pure Go text/session logic, browser view, native subprocesses, platform adapters, and release evidence. The desktop app is a Go executable serving an embedded interface in the user's local browser, not a hosted processing service or native-webview claim. It requires a supported browser. Native engines are separate bundled components, not Go implementations of neural inference.
+[Go App Builder](https://mguhlin.github.io/vcc/skills/go-app-builder/SKILL.md) governs separation between pure Go text/session logic, browser view, native subprocesses, platform adapters, and release evidence. The desktop app is a Go executable using Wails v3.0.0 to host the embedded interface in its own native WebView window (WebView2/WKWebView/WebKitGTK6). It does not launch an external browser for the workspace. Native engines are separate bundled components, not Go implementations of neural inference.
 
-Initial package targets: Windows x64; macOS Intel and Apple Silicon; Linux x64. Each needs its matching runtime folder and the common model pack. Offline processing, offline first launch after extraction, clean install, and offline source builds are separate claims. Extra architectures are not promised through cross-compilation alone.
+Initial package targets: Windows x64; macOS Intel and Apple Silicon; Linux x64. The OS installers include application engines and the media converter, install required system runtimes, and automatically download verified models on first launch. Setup requires internet; processing after setup is local. Clean physical-OS installation and offline source builds remain separate claims. Extra architectures are not promised through cross-compilation alone.
 
 The design uses a book-preparation workspace rather than a marketing dashboard: navy reading text, white editing surfaces, pale silver dividers, teal actions, coral warnings, gold page markers, system sans-serif controls and Georgia reading text. Source and prepared passages remain adjacent on desktop and stack on narrow screens. Generated paper-sculpture artwork communicates the book-to-sound workflow. Motion is unnecessary. Local inputs and exports are sensitive even without a server account.
 
@@ -28,8 +28,8 @@ The no-install browser edition compiles the same Go book/source/review core to W
 | Manual preparation/chatbot prompt | SUPPORTED | SUPPORTED | Hosted chatbot is a separate user-directed transfer. |
 | Notes/review/project backup | SUPPORTED | SUPPORTED, same format/core | Refresh requires deliberate backup/reopen. |
 | English WAV chapters/ZIP/playlist | SUPPORTED | SUPPORTED | Native 300,000 text bytes/768 MiB audio; browser 100,000/96 MiB. |
-| MP3/M4B | SUPPORTED with user-installed FFmpeg | UNSUPPORTED | Browser users can download WAV and convert locally outside the app. |
-| Offline processing | SUPPORTED after app/common-pack extraction | SUPPORTED after shell and model setup | Browser caches can be evicted; test offline readiness before travel. |
+| MP3/M4B | SUPPORTED with bundled FFmpeg | UNSUPPORTED | Browser users can download WAV and convert locally outside the app. |
+| Offline processing | SUPPORTED after automatic first-launch setup | SUPPORTED after shell and model setup | Browser caches can be evicted; test offline readiness before travel. |
 | OCR, DRM removal, visual interpretation, listening PDF | UNSUPPORTED | UNSUPPORTED | Prepare accessible text separately and inspect extraction. |
 | Physical-device install/signing/human AT | UNKNOWN | UNKNOWN across the full browser/device matrix | Hosted-runner and automated UI evidence is not device/AT qualification. |
 

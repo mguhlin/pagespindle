@@ -17,7 +17,7 @@ for name in lock:
 def run(args,cwd):
  env={k:v for k,v in os.environ.items()if k.upper()in {'PATH','SYSTEMROOT','WINDIR','COMSPEC','TMP','TEMP','TMPDIR','LANG','LC_ALL','MACOSX_DEPLOYMENT_TARGET','HOME'}}
  if target.startswith('windows'):
-  bash=Path('C:/msys64/usr/bin/bash.exe');env['MSYSTEM']='MINGW64';env['CHERE_INVOKING']='1';cmd='export PATH=/mingw64/bin:/usr/bin; cd '+shlex.quote(cwd.as_posix())+'; '+shlex.join([str(x).replace('\\','/')for x in args]);subprocess.run([str(bash),'--login','-c',cmd],env=env,check=True)
+  bash=Path(os.environ.get('MSYS2_ROOT','C:/msys64'))/'usr/bin/bash.exe';env['MSYSTEM']='MINGW64';env['CHERE_INVOKING']='1';cmd='export PATH=/mingw64/bin:/usr/bin; cd '+shlex.quote(cwd.as_posix())+'; '+shlex.join([str(x).replace('\\','/')for x in args]);subprocess.run([str(bash),'--login','-c',cmd],env=env,check=True)
  else:subprocess.run([str(x)for x in args],cwd=cwd,env=env,check=True)
 lame=work/'lame-3.100';ff=work/'ffmpeg-8.0.1'
 if not (prefix/'lib/libmp3lame.a').exists():

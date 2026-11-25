@@ -2,13 +2,13 @@
 
 **Spin text into listening.** Prepare authorized text, compare proposed changes, and make an audiobook with local AI and narration. No account or paid narration service is required.
 
-[Open PageSpindle](https://mguhlin.github.io/pagespindle/) · [Browser edition](https://mguhlin.github.io/pagespindle/browser/) · [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.1.0) · [VCC Audiobook Maker](https://mguhlin.github.io/vcc/guides/skills.html#audiobook-maker)
+[Open PageSpindle](https://mguhlin.github.io/pagespindle/) · [Browser edition](https://mguhlin.github.io/pagespindle/browser/?v=0.2.0) · [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.2.0) · [VCC Audiobook Maker](https://mguhlin.github.io/vcc/guides/skills.html#audiobook-maker)
 
 ## Start with the browser edition
 
 1. Open the browser edition over HTTPS in a browser with WebGPU support, such as a compatible recent Chrome or Edge. AI needs a usable GPU adapter and approximately 3 GB available GPU memory for the default Qwen3-1.7B model; more headroom improves reliability. Float16 alternatives are offered only for GPUs supporting that format. Phones and low-memory devices may be unsuitable.
-2. Choose **Install text model** for optional local AI, and **Install English voice** for narration. Setup downloads hundreds of MB to over 1 GB for a text model plus about 40 MB for the voice; allow at least 4 GB free browser storage, more for alternate models and audio. Download hosts receive model/asset requests, not manuscript text. Models stay in this browser's site storage, which the browser may evict.
-3. Paste text or open TXT, Markdown, EPUB, or a searchable PDF. Make a manual review copy or ask the local Qwen model to propose conservative cleanup. Compare every passage with its preserved source. Mark note destinations and deliberate omissions, with reasons. Passage review is optional; Create audiobook starts from the loaded text immediately.
+2. Choose **Install text model** under optional settings for local AI. The English voice installs automatically when first creating audio. Setup downloads hundreds of MB to over 1 GB for a text model plus about 40 MB for the voice; allow at least 4 GB free browser storage, more for alternate models and audio. Download hosts receive model/asset requests, not manuscript text. Models stay in this browser's site storage, which the browser may evict.
+3. Paste text or open TXT, Markdown, EPUB, or a searchable PDF. Make a manual review copy or ask the local Qwen model to propose conservative cleanup. You can compare passages with their preserved source. Mark note destinations and deliberate omissions, with reasons. Passage review is optional; Create audiobook starts from the loaded text immediately.
 4. Preview the English voice, then create a ZIP of WAV chapters, the listening text, and an M3U playlist. Save a project backup to retain the original, edits, and review decisions. Audio export is bounded to 100,000 UTF-8 text bytes and 96 MiB WAV per job; use parts for long books.
 5. After setup, use **Reload offline app** and test a small passage with networking off before relying on offline access. The versioned shell, Go core, models and voice run locally. First visit and model setup require internet. Clearing local work removes in-memory text/audio; removing downloaded models is a separate action. Saved files and browser/OS backups remain.
 
@@ -16,32 +16,22 @@ The optional chatbot step copies a passage with faithful preparation instruction
 
 ## Install a desktop edition
 
-Download the matching **platform ZIP** and the shared **common model pack** from the release. Extract both so their `PageSpindle/` contents merge into one new folder, without overwriting an existing project. The executable, `runtime/` and `models/` must sit together:
+Choose the installer for your computer from [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.2.0). PageSpindle opens in **its own desktop window**. No external browser or separately installed AI server is required.
 
-```text
-PageSpindle/
-  pagespindle.exe                 (Windows; pagespindle on macOS/Linux)
-  runtime/windows-amd64/          (or your matching target)
-  models/Qwen3-1.7B-Q8_0.gguf
-  models/vits-piper-en_US-ljspeech-high-int8/
-```
+| Computer | Installer and runtime setup |
+| --- | --- |
+| Windows x64 | Run `pagespindle-windows-amd64-setup.exe`. Setup includes the full Microsoft WebView2 installer and downloads/verifies Microsoft's C++ runtime automatically. Administrator permission and internet are required during setup. |
+| macOS Intel | Open `pagespindle-darwin-amd64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
+| macOS Apple Silicon | Open `pagespindle-darwin-arm64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
+| Ubuntu 24.04+ / Debian 13, Linux x64 | Install `pagespindle-linux-amd64.deb` with a dependency-aware package manager, or `sudo apt install ./pagespindle-linux-amd64.deb`. The package manager installs GTK4, WebKitGTK6 and audio dependencies automatically. Internet and administrator permission are required for setup. Launch PageSpindle from the application menu. Other distributions are not qualified. |
 
-The common pack is about 1.9 GB; allow at least 5 GB free disk for downloads, extraction, and outputs. Start with 8 GB system RAM or more and close memory-heavy applications; actual speed and memory requirements depend on the machine and document. Native AI can run on CPU and does not require browser WebGPU.
+The first launch automatically downloads a pinned, verified **1.9 GB model pack** inside PageSpindle's setup window. Progress, cancellation and retry are included. Allow at least 8 GB free disk during setup and start with 8 GB RAM or more. Models are stored in the user's application-data folder, separately from the installed program; upgrades and uninstall preserve them. After successful setup, AI preparation and narration work offline on CPU. Test a short passage with networking off before relying on offline use.
 
-| Download | Launcher | Qualification boundary |
-| --- | --- | --- |
-| Windows x64 | `Start PageSpindle.cmd` | Built and real engines exercised on Windows Server 2022 runner; Windows desktop installation/SmartScreen qualification remains separate. |
-| macOS Intel | `Start PageSpindle.command` | Built and real engines exercised on macOS 15 Intel runner. |
-| macOS Apple Silicon | `Start PageSpindle.command` | Built and real engines exercised on macOS 15 ARM runner. |
-| Linux x64 | `Start PageSpindle.sh` | Built and real engines exercised on Ubuntu 24.04 runner and local Linux; requires glibc/libstdc++ compatible with the bundled distributions. |
+Paste text or open a file, then click **Create audiobook**. Passage comparison and AI preparation are optional. The native Save dialog writes a new file and preserves existing files; choose another name if it already exists. The app bundles the voice engine, local AI engine and a minimal **FFmpeg** converter for WAV chapter ZIPs, MP3 chapter ZIPs, and M4B with chapters. English narration is included. Native jobs allow 300,000 UTF-8 text bytes and 768 MiB WAV; save longer books in parts.
 
-These are unsigned evaluation packages. Publisher signing, macOS notarization, physical-device installation and human screen-reader qualification are not claimed. Follow your organization's software rules; do not disable OS protections globally. Older OS versions and additional architectures have not been qualified. See [release evidence](VALIDATION.md).
+Save a project backup to keep source text and edits. Closing the window stops engines and clears app-owned temporary audio; unsaved work prompts before closing. The internal UI uses a private authenticated loopback connection inside the native WebView. Explicit documentation links open in the default browser. Windows WebView2 is a shared Microsoft runtime with its own update policy; macOS/Linux system components follow their OS update policies.
 
-Windows AI also requires Microsoft’s [Visual C++ x64 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist), which provides MSVCP140/VCRUNTIME140 for the pinned llama.cpp build. Install it from Microsoft or your organization’s approved offline installer before offline use if it is not already present. It is a separate system dependency, not bundled or installed automatically. The Windows runner already has it; a clean Windows installation remains unqualified.
-
-Keep the launcher open: it serves an embedded workspace on a private ephemeral `127.0.0.1` port and opens your normal browser. The URL contains a private session key; do not share it. Press Ctrl+C in the launcher to stop engines and clear temporary audio. After extraction, all required runtime/model files are local, including on first launch without internet. Refresh loses unsaved work and needs the private launcher URL again. Save a project backup before closing or refreshing.
-
-The desktop edition uses Qwen3-1.7B Q8 and the English LJ Speech voice. WAV chapter ZIPs work with the bundled engine. A separately installed local **FFmpeg** enables MP3 chapter ZIPs and M4B with chapter metadata. Native jobs allow 300,000 UTF-8 text bytes and 768 MiB WAV; long books should be processed in parts. No model, engine or content upload occurs during processing.
+These are unsigned evaluation installers. Publisher signing, macOS notarization and physical-device or human screen-reader qualification are not claimed. Organizations may restrict unsigned software. See [release evidence](VALIDATION.md). Legacy v0.1.0 ZIPs used an external browser and are superseded by these installers.
 
 ## Fidelity and privacy
 
@@ -51,12 +41,14 @@ Imports are explicit browser file selections, never arbitrary renderer paths. Or
 
 ## Reproduce and recover
 
-Use Go **1.27.4**, Python 3.12+ with `tarfile` data filtering, and a native C compiler for your matching target. Windows builds use Visual Studio C tools. Native dependencies are hash-pinned in `dependencies.json`. Go dependencies are vendored.
+Use Go **1.27.4**, Python 3.12+ with `tarfile` data filtering, and a native C compiler for your matching target. Windows builds use Visual Studio C tools for the speech adapter and MSYS2 MinGW GCC/make for native media builds. Linux builds need GTK4/WebKitGTK6 development packages. Native dependencies are hash-pinned in `dependencies.json`. Go dependencies are vendored.
 
 ```sh
 python3 scripts/prepare_runtime.py --target linux-amd64 --common
+python3 scripts/build_media.py --target linux-amd64
 python3 scripts/build.py --target linux-amd64
 python3 scripts/verify_package.py linux-amd64
+python3 scripts/build_installers.py --target linux-amd64
 PAGESPINDLE_RUNTIME="$PWD" go test -v -run TestRealOfflineEngines ./internal/engine
 ```
 

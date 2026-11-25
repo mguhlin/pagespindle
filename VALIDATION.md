@@ -19,11 +19,11 @@ Windows x64, macOS Intel, macOS Apple Silicon, and Linux x64 each have a native 
 
 - Searchable PDFs and EPUBs can extract imperfect reading order. OCR, image interpretation, and DRM removal are not implemented. Preserve the source and inspect extracted text.
 - The browser edition uses local WebGPU Qwen preparation and CPU/WASM speech after explicit downloads; caches can be evicted. Its audio jobs are limited to 100,000 UTF-8 text bytes and 96 MiB WAV. Browser output is WAV chapter ZIPs; MP3/M4B require the desktop edition or another local conversion tool.
-- The bundled voice is English. Narration is limited to 300,000 UTF-8 bytes and 768 MiB of WAV output per job; save long books in parts. WAV chapter ZIPs include text and a playlist. MP3/M4B need a separately installed local FFmpeg.
+- The bundled voice is English. Narration is limited to 300,000 UTF-8 bytes and 768 MiB of WAV output per job; save long books in parts. WAV chapter ZIPs include text and a playlist. MP3/M4B use the bundled minimal FFmpeg.
 - Models can omit or alter text; structured output, matching endpoints, and word counts do not certify fidelity. Side-by-side review and optional comparison can help identify errors.
-- Refresh/close loses unsaved browser work. Save the project backup first and reopen it through the file selector. A refreshed desktop tab needs the private session URL from the launcher again.
-- Clear local work or a graceful Ctrl+C stop of the desktop launcher cancels jobs and removes app-owned temporary audio. Closing only its browser tab does not stop the launcher. Abrupt power loss can leave temporary files in the OS temporary directory. No forensic erasure or removal of independent saved/backed-up copies is promised.
-- Windows local AI needs the separately installed Microsoft Visual C++ x64 runtime; it is present on the test runner. Clean OS installation remains unqualified.
+- Refresh/close loses unsaved browser work. Save the project backup first and reopen it through the file selector. The desktop app uses its own native window; save a project before closing.
+- Clear local work or closing the native desktop window cancels jobs and removes app-owned temporary audio. Abrupt power loss can leave temporary files in the OS temporary directory. No forensic erasure or removal of independent saved/backed-up copies is promised.
+- Windows setup automatically obtains the required Microsoft Visual C++ x64 runtime. Hosted runners already contain many system runtimes; clean physical OS installation remains unqualified.
 - The source remains public, with exact module and engine identities. No independent security audit, complete software bill of materials, publisher signing, or notarization is claimed.
 
 Release decision: **CONDITIONAL for evaluation with authorized, nonsensitive text**, limited to the checks recorded for each package. Additional qualification is needed before sensitive school use or a trusted signed distribution channel.
@@ -43,3 +43,11 @@ Release decision: **CONDITIONAL for evaluation with authorized, nonsensitive tex
 | Human AT, physical installations, signing | NOT_RUN. Keyboard/axe/reflow checks do not establish screen-reader compatibility or WCAG conformance. |
 
 Browser first model startup includes substantial downloads and GPU compilation. A software-only WebGPU renderer exceeded the preparation limit in the pilot; use supported hardware acceleration or the desktop CPU route. The float16 alternative additionally requires `shader-f16` and has not been qualified on the local adapter, which did not expose that feature. The default float32 path was exercised. A small invented pilot is not a whole-book completeness or pronunciation evaluation.
+
+## Native installer candidate
+
+Wails v3.0.0 replaces the external browser launcher. Windows, macOS Intel/ARM and Linux installers include local AI/speech engines and a built-from-source AAC/MP3 converter. First launch downloads and verifies the pinned released model pack, with cancellation/retry and preservation of existing model folders. Review does not gate narration.
+
+PASS locally: Go unit, vet and race checks; model archive checksum, extraction, per-file verification and tamper rejection; path/corruption/cancellation regressions; a real Linux WebKitGTK native-window pilot with direct unreviewed narration, actual Qwen preparation, decoded preview, project save adapter, M4B export and clear. The fixed synthetic pilot supplies a save-dialog destination; it does not claim human OS picker gestures. Docker virtual-display checks use a sandbox exception only inside the isolated test container, never shipped in the application.
+
+Cross-platform build, installed-package, upgrade, uninstall and native-window runner results are recorded by the Native package checks workflow for the candidate source revision. A failed runner blocks that platform's installer publication. Physical clean OS, downloaded-quarantine interaction, human assistive technology and publisher signing remain NOT_RUN. Model files and shared OS runtimes are intentionally retained on uninstall. No full-book accuracy guarantee follows from a short synthetic pilot.

@@ -72,7 +72,7 @@ func (r cancelReader) Read(b []byte) (int, error) {
 	return r.reader.Read(b)
 }
 func safeRelative(s string) bool {
-	return s != "" && path.Clean(s) == s && !strings.ContainsAny(s, "\\\x00") && !strings.HasPrefix(s, "/") && s != ".." && !strings.HasPrefix(s, "../")
+	return s != "" && path.Clean(s) == s && !strings.ContainsAny(s, "\\\x00:") && !strings.HasPrefix(s, "/") && s != ".." && !strings.HasPrefix(s, "../")
 }
 func Ready(directory string) bool {
 	b, e := os.ReadFile(filepath.Join(directory, ".pagespindle-models.json"))

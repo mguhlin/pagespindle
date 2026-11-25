@@ -1,7 +1,7 @@
 {
   "name": "pagespindle",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "build:web": "node scripts/build_browser.mjs",
     "test:browser": "node scripts/browser_check.cjs"
