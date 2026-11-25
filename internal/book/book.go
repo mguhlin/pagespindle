@@ -189,9 +189,6 @@ func Ready(d Document) error {
 		if b.Destination == "omit" && strings.TrimSpace(b.Reason) == "" {
 			return fmt.Errorf("Record a reason for omitting passage %d", b.ID)
 		}
-		if !b.Reviewed {
-			return fmt.Errorf("Review passage %d before generating audio", b.ID)
-		}
 	}
 	if strings.TrimSpace(Master(d)) == "" {
 		return errors.New("The narration text is empty")

@@ -17,8 +17,8 @@ func TestSourceAndReviewRoundtrip(t *testing.T) {
 	if d.Source != source {
 		t.Fatal("original bytes changed")
 	}
-	if Ready(d) == nil {
-		t.Fatal("unreviewed narration accepted")
+	if Ready(d) != nil {
+		t.Fatal("loaded text must be ready without passage review")
 	}
 	for i := range d.Blocks {
 		d.Blocks[i].Reviewed = true

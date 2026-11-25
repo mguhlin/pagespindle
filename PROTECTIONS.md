@@ -4,10 +4,10 @@ PageSpindle's primary task is authorized text → reviewable preparation → loc
 
 | Gate | Implementation contract | Required evidence |
 | --- | --- | --- |
-| [Design and accessibility](https://mguhlin.github.io/vcc/WEB_DESIGN.md) | Reading workspace; paste/open, source comparison, explicit review, voice preview, export. Keyboard access, labeled controls, reflow, progress and recovery. | Browser tasks, contrast/axe checks, narrow layout, error flow; assistive-technology gaps named separately. |
+| [Design and accessibility](https://mguhlin.github.io/vcc/WEB_DESIGN.md) | Reading workspace; paste/open, source comparison, optional review, voice preview, export. Keyboard access, labeled controls, reflow, progress and recovery. | Browser tasks, contrast/axe checks, narrow layout, error flow; assistive-technology gaps named separately. |
 | [Education privacy](https://mguhlin.github.io/vcc/EDU_COMPLIANCE.md) | Input files are read through explicit browser file selection. Text stays in the local app and its bundled engines. Work stays in memory/private temporary output until explicit download. | Network/storage inventory, clear/reset, export disclosure, and no student data in fixtures. Local use is not blanket school authorization. |
 | [Security](https://mguhlin.github.io/vcc/securevcc/securevcc.md) | Loopback binding; session key, exact host/origin checks, bounded inputs, safe DOM rendering, no generic read/write/execute bridge. Untrusted documents/model output cannot grant authority. | Allowed and denied requests; malformed/oversized imports; stale jobs; safe output names; no outside-tree writes. |
-| [Rescue and recoverable delivery](https://mguhlin.github.io/vcc/rescue/VIBE_CODE_RESCUE.md) | Preserve source; proposals require review; cancellation, truthful errors, saved project backups and bounded progress. Pinned engines, model identities and package inventories. | Save/reopen, failure/retry, cancelled jobs, reproducible build, actual extracted-package operation. |
+| [Rescue and recoverable delivery](https://mguhlin.github.io/vcc/rescue/VIBE_CODE_RESCUE.md) | Preserve source; proposals can be reviewed optionally; cancellation, truthful errors, saved project backups and bounded progress. Pinned engines, model identities and package inventories. | Save/reopen, failure/retry, cancelled jobs, reproducible build, actual extracted-package operation. |
 
 [Go App Builder](https://mguhlin.github.io/vcc/skills/go-app-builder/SKILL.md) governs separation between pure Go text/session logic, browser view, native subprocesses, platform adapters, and release evidence. The desktop app is a Go executable serving an embedded interface in the user's local browser, not a hosted processing service or native-webview claim. It requires a supported browser. Native engines are separate bundled components, not Go implementations of neural inference.
 
@@ -24,7 +24,7 @@ The no-install browser edition compiles the same Go book/source/review core to W
 | Task | Desktop | No-install browser | Recovery or limit |
 | --- | --- | --- | --- |
 | Paste; TXT/MD/EPUB/searchable PDF import | SUPPORTED | SUPPORTED, same Go logic | 16 MiB input, 2 MiB extracted text; reject invalid input without replacing current work. |
-| Local AI cleanup proposals | SUPPORTED, CPU Qwen3-1.7B | SUPPORTED on compatible WebGPU hardware; Qwen3-1.7B | Original retained; complete structured proposals only; every passage needs review. |
+| Local AI cleanup proposals | SUPPORTED, CPU Qwen3-1.7B | SUPPORTED on compatible WebGPU hardware; Qwen3-1.7B | Original retained; complete structured proposals only; passage comparison is optional. |
 | Manual preparation/chatbot prompt | SUPPORTED | SUPPORTED | Hosted chatbot is a separate user-directed transfer. |
 | Notes/review/project backup | SUPPORTED | SUPPORTED, same format/core | Refresh requires deliberate backup/reopen. |
 | English WAV chapters/ZIP/playlist | SUPPORTED | SUPPORTED | Native 300,000 text bytes/768 MiB audio; browser 100,000/96 MiB. |

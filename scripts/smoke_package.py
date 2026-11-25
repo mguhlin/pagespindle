@@ -52,7 +52,6 @@ try:
  call('prepare',document);prepared=finish()['document']
  assert prepared['source']==source and prepared['blocks'][0]['prepared'].strip()==source
  assert not any(block['reviewed']for block in prepared['blocks'])
- for block in prepared['blocks']:block['reviewed']=True
  call('render',{'document':prepared,'speed':1,'format':'wav','preview':True});job=finish()
  audio=call('download',{'id':job['id'],'name':job['files'][0]},binary=True)
  with wave.open(io.BytesIO(audio),'rb')as reader:assert reader.getframerate()==22050 and reader.getnchannels()==1 and reader.getnframes()>22050

@@ -53,13 +53,13 @@ func TestLocalAuthorityBoundary(t *testing.T) {
 		t.Fatal("host rebinding accepted")
 	}
 }
-func TestReviewEnforcedAtBackend(t *testing.T) {
+func TestNarrationDoesNotRequireReview(t *testing.T) {
 	s := New("key", "127.0.0.1:41890", t.TempDir())
 	defer s.Close()
 	d, _ := book.New("Keep this exact text.", "Test")
 	w := call(s, "POST", "/api/render", "http://"+s.Host, s.Key, RenderRequest{Document: d, Speed: 1, Format: "wav"})
-	if w.Code != 400 || !strings.Contains(w.Body.String(), "Review passage") {
-		t.Fatal("unreviewed render was not rejected")
+	if w.Code != 400 || !strings.Contains(w.Body.String(), "Install the app runtime") {
+		t.Fatal("unreviewed text did not reach the normal runtime availability check")
 	}
 	w = call(s, "POST", "/api/download", "http://"+s.Host, s.Key, map[string]any{"id": 1, "name": "../../outside"})
 	if w.Code != 400 {
