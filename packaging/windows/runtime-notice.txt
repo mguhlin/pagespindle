@@ -1,0 +1,13 @@
+PageSpindle runtime setup
+
+PageSpindle opens in its own window. It includes an unmodified Microsoft Edge WebView2 Evergreen standalone installer. Setup also downloads and verifies Microsoft's Visual C++ x64 Redistributable directly from Microsoft. These shared Windows components have their own Microsoft license terms and are not covered by PageSpindle's GPL license. Uninstalling PageSpindle does not remove shared Microsoft runtimes.
+
+Microsoft's WebView2 license terms are available through the download buttons at:
+https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+
+WebView2 collects Microsoft-required diagnostic data and optional diagnostic data controlled by Windows privacy settings. Its shared runtime can update through Microsoft policy. PageSpindle adds no application analytics or hosted inference. Manuscript preparation and narration use local engines after setup.
+
+Microsoft runtime privacy:
+https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/data-privacy
+
+The first PageSpindle launch automatically downloads and verifies about 1.9 GB of local models. Allow at least 8 GB free disk and 8 GB RAM as a starting point. Setup needs internet; processing then works offline. Models and user-saved work remain after uninstall.

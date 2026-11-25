@@ -21,6 +21,7 @@ WizardStyle=modern
 CloseApplications=yes
 LicenseFile={#SourceRoot}\LICENSE
 SetupLogging=yes
+InfoBeforeFile={#SourceRoot}\packaging\windows\runtime-notice.txt
 [Files]
 Source: "{#SourceRoot}\dist\windows-amd64\PageSpindle\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourceRoot}\.cache\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; Flags: dontcopy

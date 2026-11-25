@@ -1,6 +1,6 @@
 # Four protections and Go platform contract
 
-PageSpindle's primary task is authorized text → reviewable preparation → local narration → saved audiobook. Adults and educators are the intended initial audience. No student record service, accounts, remote inference, telemetry, or automatic publication is part of the application.
+PageSpindle's primary task is authorized text → reviewable preparation → local narration → saved audiobook. Adults and educators are the intended initial audience. No student record service, accounts, remote inference, application analytics, or automatic publication is part of the application.
 
 | Gate | Implementation contract | Required evidence |
 | --- | --- | --- |
@@ -34,3 +34,5 @@ The no-install browser edition compiles the same Go book/source/review core to W
 | Physical-device install/signing/human AT | UNKNOWN | UNKNOWN across the full browser/device matrix | Hosted-runner and automated UI evidence is not device/AT qualification. |
 
 Browser clear/cancel terminates inference workers, rejects pending work and invalidates late results; manuscripts and audio remain in memory until explicit download. Model removal is a separate action limited to selected PageSpindle model records and its voice cache. Text-model caches can share assets with other pages on the same GitHub Pages origin; the UI discloses that removal can require those pages to re-download matching assets. The service worker caches a coherent versioned shell, retains old shell caches for existing clients, and applies updates through an explicit save-and-reload action. It does not clear unrelated origin storage. No cache deletion promises forensic erasure.
+
+Windows WebView2 is a separately licensed OS runtime with Microsoft-required diagnostics and OS-controlled optional diagnostic collection. PageSpindle does not add application analytics or content uploads. See [Microsoft data/privacy documentation](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/data-privacy). System runtime diagnostics are outside the manuscript pipeline; do not describe the entire Windows stack as having zero telemetry.

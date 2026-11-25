@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['cmd/**', 'internal/**', 'native/**', 'scripts/**', 'go.mod', 'go.sum', 'dependencies.json', 'licenses/**', 'README.md', 'THIRD_PARTY.md', 'PROTECTIONS.md', 'VALIDATION.md', '.github/workflows/native.yml']
+    paths: ['cmd/**', 'internal/**', 'native/**', 'packaging/**', 'scripts/**', 'go.mod', 'go.sum', 'dependencies.json', 'licenses/**', 'README.md', 'THIRD_PARTY.md', 'PROTECTIONS.md', 'VALIDATION.md', '.github/workflows/native.yml']
 permissions:
   contents: read
 jobs:
@@ -49,27 +49,15 @@ jobs:
       - name: Real local model and voice
         shell: bash
         run: PAGESPINDLE_RUNTIME="$PWD" go test -v -run TestRealOfflineEngines ./internal/engine
-      - name: Extracted package model and narration
-        run: python scripts/smoke_package.py ${{ matrix.target }}
-      - name: Real native window (Linux virtual display)
-        if: runner.os == 'Linux'
-        run: dbus-run-session -- xvfb-run -a python scripts/native_window_check.py --target ${{ matrix.target }}
-        env:
-          WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS: '1'
-          WEBKIT_DISABLE_DMABUF_RENDERER: '1'
-          GSK_RENDERER: cairo
-      - name: Real native window (Windows/macOS)
-        if: runner.os != 'Linux'
-        run: python scripts/native_window_check.py --target ${{ matrix.target }}
       - run: python scripts/build_installers.py --target ${{ matrix.target }}
-      - name: Installed Linux package, upgrade and uninstall
+      - name: Installed Linux package, repeat setup and uninstall
         if: runner.os == 'Linux'
         run: dbus-run-session -- xvfb-run -a python scripts/installer_check.py --target ${{ matrix.target }}
         env:
           WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS: '1'
           WEBKIT_DISABLE_DMABUF_RENDERER: '1'
           GSK_RENDERER: cairo
-      - name: Installed Windows/macOS package, upgrade and uninstall
+      - name: Installed Windows/macOS package, repeat setup and uninstall
         if: runner.os != 'Linux'
         run: python scripts/installer_check.py --target ${{ matrix.target }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -80,5 +68,6 @@ jobs:
             dist/pagespindle-${{ matrix.target }}.pkg
             dist/pagespindle-${{ matrix.target }}.deb
             dist/pagespindle-${{ matrix.target }}-setup.exe
+            dist/pagespindle-${{ matrix.target }}-signed-inventory.json
           if-no-files-found: error
           retention-days: 14

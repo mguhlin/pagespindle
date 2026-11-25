@@ -21,8 +21,8 @@ Choose the installer for your computer from [Downloads](https://github.com/mguhl
 | Computer | Installer and runtime setup |
 | --- | --- |
 | Windows x64 | Run `pagespindle-windows-amd64-setup.exe`. Setup includes the full Microsoft WebView2 installer and downloads/verifies Microsoft's C++ runtime automatically. Administrator permission and internet are required during setup. |
-| macOS Intel | Open `pagespindle-darwin-amd64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
-| macOS Apple Silicon | Open `pagespindle-darwin-arm64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
+| macOS 15+ Intel | Open `pagespindle-darwin-amd64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
+| macOS 15+ Apple Silicon | Open `pagespindle-darwin-arm64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
 | Ubuntu 24.04+ / Debian 13, Linux x64 | Install `pagespindle-linux-amd64.deb` with a dependency-aware package manager, or `sudo apt install ./pagespindle-linux-amd64.deb`. The package manager installs GTK4, WebKitGTK6 and audio dependencies automatically. Internet and administrator permission are required for setup. Launch PageSpindle from the application menu. Other distributions are not qualified. |
 
 The first launch automatically downloads a pinned, verified **1.9 GB model pack** inside PageSpindle's setup window. Progress, cancellation and retry are included. Allow at least 8 GB free disk during setup and start with 8 GB RAM or more. Models are stored in the user's application-data folder, separately from the installed program; upgrades and uninstall preserve them. After successful setup, AI preparation and narration work offline on CPU. Test a short passage with networking off before relying on offline use.
@@ -37,7 +37,7 @@ These are unsigned evaluation installers. Publisher signing, macOS notarization 
 
 This implements a bounded version of VCC's skill: preserve source, propose conservative mechanical cleanup, review passages, relocate notes by original chapter headings, and narrate. Models can omit or alter words; structured output and matching endpoints cannot certify fidelity. Passage comparison is optional. OCR, interpreting unseen figures, DRM removal, listening-ready PDF output, and automatic book-wide fidelity verification are not implemented. PDF/EPUB extraction can have imperfect reading order.
 
-Imports are explicit browser file selections, never arbitrary renderer paths. Originals are not overwritten. Work stays in memory and, in the desktop edition, private temporary audio until deliberate download. Normal clear/cancel invalidates late results; abrupt power loss can leave temporary files. Clear does not erase saved downloads, clipboard contents, OS/browser backups, or forensic traces. No accounts, telemetry, remote fonts, hosted inference, or automatic publication are included. Local processing alone does not grant institutional approval for student records.
+Imports are explicit browser file selections, never arbitrary renderer paths. Originals are not overwritten. Work stays in memory and, in the desktop edition, private temporary audio until deliberate download. Normal clear/cancel invalidates late results; abrupt power loss can leave temporary files. Clear does not erase saved downloads, clipboard contents, OS/browser backups, or forensic traces. PageSpindle adds no accounts, application analytics, remote fonts, hosted inference, or automatic publication. Windows WebView2 has Microsoft-required diagnostics and OS-controlled optional diagnostics under [Microsoft's privacy policy](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/data-privacy); its shared runtime can update separately. This is not a promise of zero operating-system traffic. Local processing alone does not grant institutional approval for student records.
 
 ## Reproduce and recover
 

@@ -77,3 +77,19 @@ func TestNativeSaveRejectsForgedJobPath(t *testing.T) {
 		t.Fatal("renderer forged native path authority")
 	}
 }
+func TestNativeHelpOnlyAllowsFixedDestinations(t *testing.T) {
+	s := New("key", "127.0.0.1:44000", t.TempDir())
+	defer s.Close()
+	opened := ""
+	s.Desktop = &DesktopHooks{OpenHelp: func(url string) error { opened = url; return nil }}
+	for _, id := range []string{"file:///etc/passwd", "https://attacker.example", "source/../../", "vcc?url=evil"} {
+		w := call(s, "POST", "/api/open-help", "http://"+s.Host, s.Key, map[string]string{"id": id})
+		if w.Code != 400 || opened != "" {
+			t.Fatal("untrusted help URL opened")
+		}
+	}
+	w := call(s, "POST", "/api/open-help", "http://"+s.Host, s.Key, map[string]string{"id": "source"})
+	if w.Code != 200 || opened != "https://github.com/mguhlin/pagespindle" {
+		t.Fatal("fixed help link failed")
+	}
+}

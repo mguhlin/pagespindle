@@ -18,7 +18,7 @@ try:
  if not data['ok']:raise RuntimeError(data['message'])
  p.wait(timeout=30)
  if p.returncode:raise RuntimeError('Native app did not close cleanly')
- for name in ['PageSpindle-project.json','My Listening Edition - Audiobook.zip','My Listening Edition.m4b']:
+ for name in ['PageSpindle-project.json','My Listening Edition - Audiobook.zip','My Listening Edition.m4b','Native MP3 - Audiobook.zip']:
   if not(output/name).is_file()or(output/name).stat().st_size<100:raise RuntimeError('Missing actual native output '+name)
 finally:
  if p.poll()is None:p.kill();p.wait(timeout=10)
