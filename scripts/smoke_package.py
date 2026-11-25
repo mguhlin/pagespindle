@@ -25,7 +25,7 @@ with zipfile.ZipFile(ROOT/'dist'/('pagespindle-'+target+'.zip'))as z:
    path.write_bytes(z.read(info))
    if os.name!='nt':path.chmod(mode&0o777)
 installed=work/'PageSpindle';shutil.copytree(ROOT/'models',installed/'models')
-exe=installed/('pagespindle.exe'if os.name=='nt'else'pagespindle')
+exe=installed/('pagespindle-worker.exe'if os.name=='nt'else'pagespindle-worker')
 env=dict(os.environ,TMPDIR=str(temporary),TMP=str(temporary),TEMP=str(temporary));proc=subprocess.Popen([str(exe),'--no-browser'],cwd=installed,env=env,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True,encoding='utf-8')
 api=None
 try:

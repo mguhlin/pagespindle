@@ -17,7 +17,7 @@ jobs:
           - {runner: macos-15-intel, target: darwin-amd64}
           - {runner: macos-15, target: darwin-arm64}
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -25,9 +25,22 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version: '1.27.4'
+      - name: Linux native window libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libwebkitgtk-6.0-dev xvfb xauth dbus-x11 gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+      - uses: msys2/setup-msys2@3c51bf698df1e37b2261f53cb67797b97761185c
+        if: runner.os == 'Windows'
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc make
+      - name: Add native Windows compiler
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: '"C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
       - run: python scripts/prepare_runtime.py --target ${{ matrix.target }} --common
       - run: go test ./...
       - run: go vet ./...
+      - run: python scripts/build_media.py --target ${{ matrix.target }}
       - run: python scripts/build.py --target ${{ matrix.target }}
       - run: python scripts/verify_package.py ${{ matrix.target }}
       - name: Real local model and voice
@@ -35,9 +48,34 @@ jobs:
         run: PAGESPINDLE_RUNTIME="$PWD" go test -v -run TestRealOfflineEngines ./internal/engine
       - name: Extracted package model and narration
         run: python scripts/smoke_package.py ${{ matrix.target }}
+      - name: Real native window (Linux virtual display)
+        if: runner.os == 'Linux'
+        run: dbus-run-session -- xvfb-run -a python scripts/native_window_check.py --target ${{ matrix.target }}
+        env:
+          WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS: '1'
+          WEBKIT_DISABLE_DMABUF_RENDERER: '1'
+          GSK_RENDERER: cairo
+      - name: Real native window (Windows/macOS)
+        if: runner.os != 'Linux'
+        run: python scripts/native_window_check.py --target ${{ matrix.target }}
+      - run: python scripts/build_installers.py --target ${{ matrix.target }}
+      - name: Installed Linux package, upgrade and uninstall
+        if: runner.os == 'Linux'
+        run: dbus-run-session -- xvfb-run -a python scripts/installer_check.py --target ${{ matrix.target }}
+        env:
+          WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS: '1'
+          WEBKIT_DISABLE_DMABUF_RENDERER: '1'
+          GSK_RENDERER: cairo
+      - name: Installed Windows/macOS package, upgrade and uninstall
+        if: runner.os != 'Linux'
+        run: python scripts/installer_check.py --target ${{ matrix.target }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: pagespindle-${{ matrix.target }}
-          path: dist/pagespindle-${{ matrix.target }}.zip
+          path: |
+            dist/pagespindle-${{ matrix.target }}.zip
+            dist/pagespindle-${{ matrix.target }}.pkg
+            dist/pagespindle-${{ matrix.target }}.deb
+            dist/pagespindle-${{ matrix.target }}-setup.exe
           if-no-files-found: error
           retention-days: 14

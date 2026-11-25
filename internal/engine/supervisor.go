@@ -11,9 +11,10 @@ import (
 )
 
 type supervisorSpec struct {
-	Root string
-	Port int
-	Key  string
+	Root   string
+	Models string
+	Port   int
+	Key    string
 }
 
 func cleanEnvironment() []string {
@@ -36,6 +37,10 @@ func Supervise(in io.Reader) int {
 		return 2
 	}
 	e := New(spec.Root)
+	if spec.Models != "" && !filepath.IsAbs(spec.Models) {
+		return 2
+	}
+	e.ModelRoot = spec.Models
 	program := e.path("llama", "llama-server")
 	if !exists(program) || !exists(e.model()) {
 		return 3

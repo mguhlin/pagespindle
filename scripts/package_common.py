@@ -8,10 +8,13 @@ sources=[('offline-speech-9fdb771e-source.tar.gz','https://codeload.github.com/d
 def add(z,p,name):
  info=zipfile.ZipInfo(name,date_time=(1980,1,1,0,0,0));info.compress_type=zipfile.ZIP_STORED;info.external_attr=0o100644<<16
  with p.open('rb')as src,z.open(info,'w',force_zip64=True)as dst:shutil.copyfileobj(src,dst,4*1024*1024)
+media=json.loads((ROOT/'native/media-lock.json').read_text())
+for row in media.values():sources.append((row['name'],row['url']))
 inventory=[]
 locked={row['file']:row for row in json.loads((ROOT/'SOURCE_ARCHIVES.json').read_text())} if (ROOT/'SOURCE_ARCHIVES.json').exists() else {}
 for name,url in sources:
  p=source_dir/name
+ if not p.exists()and(ROOT/'.cache'/name).exists():shutil.copy2(ROOT/'.cache'/name,p)
  if not p.exists():
   with urllib.request.urlopen(url,timeout=90)as r,p.open('wb')as f:shutil.copyfileobj(r,f)
  row={'file':name,'source':url,'sha256':hashlib.file_digest(p.open('rb'),'sha256').hexdigest(),'bytes':p.stat().st_size}
@@ -20,7 +23,7 @@ for name,url in sources:
 (ROOT/'SOURCE_ARCHIVES.json').write_text(json.dumps(inventory,indent=2)+'\n')
 with zipfile.ZipFile(dist/'pagespindle-speech-and-engine-source.zip','w')as z:
  for row in inventory:add(z,source_dir/row['file'],'PageSpindle-source/'+row['file'])
- for name in ['SOURCE_ARCHIVES.json','THIRD_PARTY.md','LICENSE','native/speech-worker.c','scripts/build.py','dependencies.json']:add(z,ROOT/name,'PageSpindle-source/'+name)
+ for name in ['SOURCE_ARCHIVES.json','THIRD_PARTY.md','LICENSE','native/speech-worker.c','scripts/build.py','dependencies.json','native/media-lock.json','scripts/build_media.py']:add(z,ROOT/name,'PageSpindle-source/'+name)
 if args.source_only:
  print('Packaged corresponding source only',flush=True);raise SystemExit(0)
 files=sorted(p for p in (ROOT/'models').rglob('*') if p.is_file())+sorted(p for p in (ROOT/'licenses').rglob('*') if p.is_file())+[ROOT/'THIRD_PARTY.md']

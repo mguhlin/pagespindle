@@ -22,12 +22,13 @@ import (
 )
 
 type Engine struct {
-	Root     string
-	mu       sync.Mutex
-	cmd      *exec.Cmd
-	done     chan error
-	url, key string
-	control  *os.File
+	Root      string
+	ModelRoot string
+	mu        sync.Mutex
+	cmd       *exec.Cmd
+	done      chan error
+	url, key  string
+	control   *os.File
 }
 type Status struct {
 	AI       bool   `json:"ai"`
@@ -55,13 +56,36 @@ func (e *Engine) path(role, name string) string {
 	})
 	return result
 }
-func (e *Engine) model() string { return filepath.Join(e.Root, "models", "Qwen3-1.7B-Q8_0.gguf") }
+func (e *Engine) WorkerProgram() (string, error) {
+	name := "pagespindle-worker"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	p := filepath.Join(e.Root, name)
+	if exists(p) {
+		return p, nil
+	}
+	return os.Executable()
+}
+func (e *Engine) modelsDir() string {
+	if e.ModelRoot != "" {
+		return e.ModelRoot
+	}
+	return filepath.Join(e.Root, "models")
+}
+func (e *Engine) model() string { return filepath.Join(e.modelsDir(), "Qwen3-1.7B-Q8_0.gguf") }
 func (e *Engine) voice() string {
-	return filepath.Join(e.Root, "models", "vits-piper-en_US-ljspeech-high-int8")
+	return filepath.Join(e.modelsDir(), "vits-piper-en_US-ljspeech-high-int8")
 }
 func exists(p string) bool { s, e := os.Stat(p); return e == nil && s.Mode().IsRegular() }
+func (e *Engine) FFmpegPath() (string, error) {
+	if p := e.path("media", "ffmpeg"); exists(p) {
+		return p, nil
+	}
+	return exec.LookPath("ffmpeg")
+}
 func (e *Engine) Status() Status {
-	_, ff := exec.LookPath("ffmpeg")
+	_, ff := e.FFmpegPath()
 	return Status{exists(e.path("llama", "llama-server")) && exists(e.model()), exists(e.path("speech", "pagespindle-speech")) && exists(filepath.Join(e.voice(), "en_US-ljspeech-high.onnx")), ff == nil, runtime.GOOS + "-" + runtime.GOARCH}
 }
 func child(ctx context.Context, program string, args ...string) *exec.Cmd {
@@ -101,7 +125,7 @@ func (e *Engine) start(ctx context.Context) error {
 	}
 	e.key = hex.EncodeToString(key)
 	e.url = fmt.Sprintf("http://127.0.0.1:%d", port)
-	exe, err := os.Executable()
+	exe, err := e.WorkerProgram()
 	if err != nil {
 		return err
 	}
@@ -124,7 +148,7 @@ func (e *Engine) start(ctx context.Context) error {
 	e.control = writer
 	e.done = make(chan error, 1)
 	go func() { e.done <- c.Wait(); close(e.done) }()
-	if err = json.NewEncoder(writer).Encode(supervisorSpec{Root: e.Root, Port: port, Key: e.key}); err != nil {
+	if err = json.NewEncoder(writer).Encode(supervisorSpec{Root: e.Root, Models: e.ModelRoot, Port: port, Key: e.key}); err != nil {
 		e.stopLocked()
 		return errors.New("The model supervisor could not initialize")
 	}
@@ -265,7 +289,7 @@ func (e *Engine) Speak(ctx context.Context, text, output string, speed float64) 
 	return nil
 }
 func (e *Engine) FFmpeg(ctx context.Context, args ...string) error {
-	p, err := exec.LookPath("ffmpeg")
+	p, err := e.FFmpegPath()
 	if err != nil {
 		return errors.New("FFmpeg is needed for MP3/M4B. WAV audiobook export works without it")
 	}

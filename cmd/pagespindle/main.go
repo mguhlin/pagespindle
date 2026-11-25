@@ -13,12 +13,16 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/exec"
+
 	"os/signal"
 	"path/filepath"
-	"runtime"
+
+	"github.com/mguhlin/pagespindle/internal/provision"
+	"sync"
 	"time"
 )
+
+var nativeTestDirectory string
 
 func main() {
 	if os.Getenv("PAGESPINDLE_ENGINE_SUPERVISOR") == "1" {
@@ -28,7 +32,43 @@ func main() {
 	root := flag.String("assets", "", "folder containing runtime/ and models/")
 	noBrowser := flag.Bool("no-browser", false, "print the local URL without opening a browser")
 	port := flag.Int("port", 0, "local port (default: choose an available port)")
+	testDir := flag.String("native-self-test", "", "run a fixed synthetic workspace pilot in the native window")
+	modelsDir := flag.String("models", "", "use an already installed local model folder")
+	installModels := flag.String("install-models-dir", "", "install pinned models into this folder")
 	flag.Parse()
+	if *installModels != "" {
+		target, err := filepath.Abs(*installModels)
+		if err != nil {
+			os.Exit(2)
+		}
+		if provision.Ready(target) {
+			return
+		}
+		manager := provision.New(target)
+		manager.Start()
+		last := ""
+		for {
+			state := manager.Snapshot()
+			message := fmt.Sprintf("%s: %d%%", state.Phase, state.Bytes*100/provision.PackBytes)
+			if message != last {
+				fmt.Println(message)
+				last = message
+			}
+			if state.Phase == "complete" {
+				manager.Close()
+				return
+			}
+			if state.Phase == "failed" || state.Phase == "cancelled" {
+				fmt.Fprintln(os.Stderr, state.Message)
+				manager.Close()
+				os.Exit(2)
+			}
+			time.Sleep(time.Second)
+		}
+	}
+	if *testDir != "" {
+		nativeTestDirectory, _ = filepath.Abs(*testDir)
+	}
 	if *extract {
 		b, e := io.ReadAll(io.LimitReader(os.Stdin, book.MaxInput+1))
 		if e != nil || len(b) > book.MaxInput {
@@ -48,6 +88,10 @@ func main() {
 	}
 	if *root == "" {
 		*root = filepath.Dir(exe)
+		resources := filepath.Join(*root, "..", "Resources")
+		if info, err := os.Stat(filepath.Join(resources, "runtime")); err == nil && info.IsDir() {
+			*root = resources
+		}
 	}
 	*root, e = filepath.Abs(*root)
 	if e != nil {
@@ -65,26 +109,30 @@ func main() {
 	token := hex.EncodeToString(key)
 	host := l.Addr().String()
 	s := app.New(token, host, *root)
+	if *modelsDir != "" {
+		s.Engine.ModelRoot, _ = filepath.Abs(*modelsDir)
+	}
 	httpServer := &http.Server{Handler: s.Handler(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 8192}
 	url := "http://" + host + "/#" + token
-	fmt.Println("PageSpindle — Spin text into listening")
-	fmt.Println("Open this private local session in your browser:")
-	fmt.Println(url)
-	fmt.Println("Keep this launcher open. Press Ctrl+C here to stop and remove temporary audio.")
-	if !*noBrowser {
-		var c *exec.Cmd
-		switch runtime.GOOS {
-		case "windows":
-			c = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
-		case "darwin":
-			c = exec.Command("open", url)
-		default:
-			c = exec.Command("xdg-open", url)
-		}
-		if e = c.Start(); e == nil {
-			go c.Wait()
-		}
+	var once sync.Once
+	stop := func() {
+		once.Do(func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			httpServer.Shutdown(ctx)
+			s.Close()
+		})
 	}
+	if !*noBrowser {
+		if err := runNativeWindow(url, s, func() { go httpServer.Serve(l) }, stop); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		stop()
+		return
+	}
+	fmt.Println("PageSpindle — Spin text into listening")
+	fmt.Println(url)
+	fmt.Println("Headless diagnostic session. Press Ctrl+C to stop.")
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt)
 	go func() {

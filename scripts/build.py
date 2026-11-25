@@ -20,7 +20,8 @@ def main():
   run(['cc','-O2',ROOT/'native/speech-worker.c','-I',source/'include','-L',source/'lib','-Wl,-rpath,'+rpath,'-lsherpa-onnx-c-api','-o',out])
  stage=ROOT/'dist'/target/'PageSpindle'
  if stage.exists():shutil.rmtree(stage)
- stage.mkdir(parents=True);env=dict(os.environ,CGO_ENABLED='0');run(['go','build','-trimpath','-ldflags=-s -w','-o',stage/('pagespindle'+exe),'./cmd/pagespindle'],env=env)
+ stage.mkdir(parents=True);env=dict(os.environ,CGO_ENABLED='0');run(['go','build','-trimpath','-ldflags=-s -w','-o',stage/('pagespindle-worker'+exe),'./cmd/pagespindle'],env=env)
+ env=dict(os.environ,CGO_ENABLED='1');flags='-s -w'+(' -H windowsgui'if target.startswith('windows')else'');run(['go','build','-tags','desktop','-trimpath','-ldflags='+flags,'-o',stage/('pagespindle'+exe),'./cmd/pagespindle'],env=env)
  runtime_dest=stage/'runtime'/target
  # Retain the pinned distributions, their loaders/resources and native library modes.
  shutil.copytree(ROOT/'runtime'/target,runtime_dest,symlinks=True)
@@ -32,7 +33,7 @@ def main():
     elif p.suffix in {'.obj','.lib','.a','.h','.hpp'}:p.unlink()
  for name in ['LICENSE','README.md','PROTECTIONS.md','THIRD_PARTY.md','VALIDATION.md','dependencies.json']:shutil.copy2(ROOT/name,stage/name)
  shutil.copytree(ROOT/'licenses',stage/'licenses')
- if target.startswith('windows'):(stage/'Start PageSpindle.cmd').write_text('@echo off\r\ncd /d "%~dp0"\r\n"%~dp0pagespindle.exe"\r\npause\r\n')
+ if target.startswith('windows'):pass
  else:
   launcher=stage/('Start PageSpindle.command' if target.startswith('darwin') else 'Start PageSpindle.sh');launcher.write_text('#!/bin/sh\ncd -- "$(dirname -- "$0")" || exit 1\nexec ./pagespindle\n');launcher.chmod(0o755)
  manifest=[]

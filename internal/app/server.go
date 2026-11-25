@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/mguhlin/pagespindle/internal/book"
 	"github.com/mguhlin/pagespindle/internal/engine"
+	"github.com/mguhlin/pagespindle/internal/provision"
 	"io"
 	"io/fs"
 	"mime"
@@ -21,6 +22,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -41,24 +43,60 @@ type Job struct {
 	active   bool
 }
 type Server struct {
-	Key, Host string
-	Engine    *engine.Engine
-	mu        sync.Mutex
-	job       *Job
-	next      int
-	worker    sync.WaitGroup
-	clearing  bool
+	Setup          *provision.Manager
+	NativeReady    chan struct{}
+	readyOnce      sync.Once
+	SelfTest       func(bool, string)
+	SelfTestScript string
+	Desktop        *DesktopHooks
+	desktopDirty   atomic.Bool
+	desktopEpoch   atomic.Uint64
+	Key, Host      string
+	Engine         *engine.Engine
+	mu             sync.Mutex
+	job            *Job
+	next           int
+	worker         sync.WaitGroup
+	clearing       bool
 }
 
 func New(key, host, root string) *Server {
-	return &Server{Key: key, Host: host, Engine: engine.New(root)}
+	return &Server{Key: key, Host: host, Engine: engine.New(root), NativeReady: make(chan struct{})}
 }
 func (s *Server) Handler() http.Handler {
 	web, _ := fs.Sub(assets, "web")
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.FS(web)))
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if s.Desktop != nil && (r.URL.Path == "/" || r.URL.Path == "/index.html") {
+			b, _ := fs.ReadFile(web, "index.html")
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			if s.SelfTestScript != "" {
+				b = bytes.Replace(b, []byte(`<script src="app.js"`), []byte(`<script src="native-pilot.js"></script><script src="app.js"`), 1)
+			}
+			w.Write(bytes.Replace(b, []byte(`<html lang="en">`), []byte(`<html lang="en" data-desktop="true">`), 1))
+			return
+		}
+		http.FileServer(http.FS(web)).ServeHTTP(w, r)
+	}))
+	mux.HandleFunc("/native-pilot.js", func(w http.ResponseWriter, r *http.Request) {
+		if s.SelfTestScript == "" {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/javascript")
+		io.WriteString(w, s.SelfTestScript)
+	})
 	mux.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) { s.json(w, s.Engine.Status()) })
 	mux.HandleFunc("/api/new", s.newDocument)
+	mux.HandleFunc("/api/setup-status", s.setupStatus)
+	mux.HandleFunc("/api/setup-start", s.setupStart)
+	mux.HandleFunc("/api/setup-cancel", s.setupCancel)
+	mux.HandleFunc("/api/window-ready", s.windowReady)
+	mux.HandleFunc("/api/self-test", s.windowReport)
+	mux.HandleFunc("/api/open-help", s.openHelp)
+	mux.HandleFunc("/api/save-text", s.saveText)
+	mux.HandleFunc("/api/save-job", s.saveJob)
+	mux.HandleFunc("/api/workspace-state", s.desktopState)
 	mux.HandleFunc("/api/master", s.masterDocument)
 	mux.HandleFunc("/api/import", s.importDocument)
 	mux.HandleFunc("/api/prepare", s.prepare)
@@ -86,7 +124,7 @@ func (s *Server) Handler() http.Handler {
 				http.Error(w, "Open PageSpindle from its launcher to start a session", 403)
 				return
 			}
-			if r.Method != "POST" && r.URL.Path != "/api/status" && r.URL.Path != "/api/job" {
+			if r.Method != "POST" && r.URL.Path != "/api/status" && r.URL.Path != "/api/job" && r.URL.Path != "/api/setup-status" {
 				http.Error(w, "Use POST", 405)
 				return
 			}
@@ -133,6 +171,8 @@ func (s *Server) newDocument(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, e)
 		return
 	}
+	s.desktopEpoch.Add(1)
+	s.desktopDirty.Store(true)
 	s.json(w, d)
 }
 func (s *Server) masterDocument(w http.ResponseWriter, r *http.Request) {
@@ -173,6 +213,8 @@ func (s *Server) importDocument(w http.ResponseWriter, r *http.Request) {
 			s.fail(w, e)
 			return
 		}
+		s.desktopEpoch.Add(1)
+		s.desktopDirty.Store(true)
 		s.json(w, d)
 		return
 	case ".txt", ".md":
@@ -182,7 +224,7 @@ func (s *Server) importDocument(w http.ResponseWriter, r *http.Request) {
 	case ".pdf":
 		ctx, cancel := context.WithTimeout(r.Context(), 20*time.Second)
 		defer cancel()
-		exe, err := os.Executable()
+		exe, err := s.Engine.WorkerProgram()
 		if err != nil {
 			s.fail(w, err)
 			return
@@ -210,6 +252,8 @@ func (s *Server) importDocument(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, errors.New("No usable text was extracted. Scans need OCR; review PDF/EPUB reading order before narration"))
 		return
 	}
+	s.desktopEpoch.Add(1)
+	s.desktopDirty.Store(true)
 	s.json(w, d)
 }
 
@@ -238,6 +282,7 @@ func (s *Server) begin(kind string, total int) (*Job, context.Context, error) {
 		}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
+	s.desktopEpoch.Add(1)
 	s.next++
 	j := &Job{ID: s.next, State: "running", Message: kind, Total: total, cancel: cancel, active: true, paths: map[string]string{}, Files: []string{}}
 	s.job = j
@@ -301,6 +346,8 @@ func (s *Server) clear(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, errors.New("Local clearing is already in progress"))
 		return
 	}
+	s.desktopEpoch.Add(1)
+	s.desktopDirty.Store(false)
 	s.clearing = true
 	j := s.job
 	if j != nil {
@@ -328,6 +375,8 @@ func (s *Server) clear(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) Close() {
 	s.mu.Lock()
+	s.desktopEpoch.Add(1)
+	s.desktopDirty.Store(false)
 	s.clearing = true
 	j := s.job
 	if j != nil {
