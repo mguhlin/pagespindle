@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "release": "v0.2.0",
+  "application_source": "00a05f657ac1119088c3b4a9b584182da65231d2",
+  "workflow": "https://github.com/mguhlin/pagespindle/actions/runs/45523461210",
+  "platforms": [
+    {
+      "name": "package (ubuntu-24.04, linux-amd64)",
+      "databaseId": 138900852465,
+      "conclusion": "success"
+    },
+    {
+      "name": "package (macos-15-intel, darwin-amd64)",
+      "databaseId": 138900852699,
+      "conclusion": "success"
+    },
+    {
+      "name": "package (windows-2022, windows-amd64)",
+      "databaseId": 138900852833,
+      "conclusion": "success"
+    },
+    {
+      "name": "package (macos-15, darwin-arm64)",
+      "databaseId": 138900852840,
+      "conclusion": "success"
+    }
+  ],
+  "scope": [
+    "Go tests and vet on all four runners",
+    "Actual local Qwen and speech engines on all four runners",
+    "Installed native window: direct unreviewed narration, actual AI proposal, WAV, MP3, M4B, preview decode, synthetic save adapter, project save and clear",
+    "Installed component identity: byte hashes and symlink targets; Mac post-sign bundle receipts",
+    "Repeated setup and uninstall on all four runners",
+    "Local Linux race and Go vulnerability checks",
+    "Real first-launch automatic model download and native workspace transition on Linux",
+    "Fresh Ubuntu 24.04 and Debian 13 containers: actual local AI and all three audio formats",
+    "Linux native workflow with external networking disabled",
+    "Live browser: direct creation, real voice, backup/recovery, offline narration, axe and 320px reflow"
+  ],
+  "limits": {
+    "native_save_picker_gestures": "NOT_RUN; synthetic save adapter is used by the fixed pilot",
+    "physical_desktop_installs": "NOT_RUN",
+    "human_assistive_technology": "NOT_RUN",
+    "publisher_signing_and_notarization": "NOT_RUN; Mac app uses ad-hoc integrity signatures only",
+    "cross_version_package_upgrade": "NOT_RUN; repeated installation of this candidate was checked",
+    "full_book_fidelity": "NOT_VERIFIED",
+    "Linux_test_sandbox": "Container/virtual-display checks use a sandbox exception, never set by shipped launchers"
+  }
+}
