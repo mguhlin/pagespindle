@@ -1,27 +1,27 @@
 {
   "schema": 1,
-  "release": "v0.2.0",
-  "application_source": "00a05f657ac1119088c3b4a9b584182da65231d2",
-  "workflow": "https://github.com/mguhlin/pagespindle/actions/runs/45523461210",
+  "release": "v0.3.0",
+  "application_source": "5415c632ffabb0efac47a2e72c7d7396f79dcd87",
+  "workflow": "https://github.com/mguhlin/pagespindle/actions/runs/45891375164",
   "platforms": [
     {
       "name": "package (ubuntu-24.04, linux-amd64)",
-      "databaseId": 138900852465,
+      "databaseId": 140154632789,
       "conclusion": "success"
     },
     {
       "name": "package (macos-15-intel, darwin-amd64)",
-      "databaseId": 138900852699,
-      "conclusion": "success"
-    },
-    {
-      "name": "package (windows-2022, windows-amd64)",
-      "databaseId": 138900852833,
+      "databaseId": 140154633006,
       "conclusion": "success"
     },
     {
       "name": "package (macos-15, darwin-arm64)",
-      "databaseId": 138900852840,
+      "databaseId": 140154633125,
+      "conclusion": "success"
+    },
+    {
+      "name": "package (windows-2022, windows-amd64)",
+      "databaseId": 140154633253,
       "conclusion": "success"
     }
   ],
@@ -32,10 +32,13 @@
     "Installed component identity: byte hashes and symlink targets; Mac post-sign bundle receipts",
     "Repeated setup and uninstall on all four runners",
     "Local Linux race and Go vulnerability checks",
-    "Real first-launch automatic model download and native workspace transition on Linux",
-    "Fresh Ubuntu 24.04 and Debian 13 containers: actual local AI and all three audio formats",
-    "Linux native workflow with external networking disabled",
-    "Live browser: direct creation, real voice, backup/recovery, offline narration, axe and 320px reflow"
+    "Live browser: direct creation, real voice, backup/recovery, offline narration, axe and 320px reflow",
+    "Actual local Vulkan Qwen preparation on NVIDIA RTX 2060, CPU voice and owner cleanup",
+    "GPU startup and inference failure tests with CPU recovery; device selection and race regressions",
+    "Live redesigned browser: progress beside Create audiobook, partial-chapter work, measured ETA, cleared completion estimate, actual speech, backup/recovery, offline narration, axe and 320px reflow",
+    "Actual browser WebGPU Qwen preparation and cached offline preparation on NVIDIA hardware",
+    "Full extracted platform archive inventory checked against the exact tested source revision",
+    "Current voice remains CPU; experimental WebGPU speech was slower for the scoped local pilot and is not shipped"
   ],
   "limits": {
     "native_save_picker_gestures": "NOT_RUN; synthetic save adapter is used by the fixed pilot",
@@ -44,6 +47,8 @@
     "publisher_signing_and_notarization": "NOT_RUN; Mac app uses ad-hoc integrity signatures only",
     "cross_version_package_upgrade": "NOT_RUN; repeated installation of this candidate was checked",
     "full_book_fidelity": "NOT_VERIFIED",
-    "Linux_test_sandbox": "Container/virtual-display checks use a sandbox exception, never set by shipped launchers"
-  }
+    "Linux_test_sandbox": "Container/virtual-display checks use a sandbox exception, never set by shipped launchers",
+    "physical_GPU_matrix": "Only local NVIDIA Vulkan/WebGPU exercised on hardware; Mac Metal and AMD/Intel hardware remain unqualified"
+  },
+  "previous_release_evidence": "v0.2.0 records earlier automatic setup, clean Linux container and network-isolation pilots; those additional pilots were not repeated for this UI/GPU revision"
 }
