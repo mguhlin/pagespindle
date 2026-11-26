@@ -2,13 +2,13 @@
 
 **Spin text into listening.** Prepare authorized text, compare proposed changes, and make an audiobook with local AI and narration. No account or paid narration service is required.
 
-[Open PageSpindle](https://mguhlin.github.io/pagespindle/) · [Browser edition](https://mguhlin.github.io/pagespindle/browser/?v=0.2.0) · [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.3.0) · [VCC Audiobook Maker](https://mguhlin.github.io/vcc/guides/skills.html#audiobook-maker)
+[Open PageSpindle](https://mguhlin.github.io/pagespindle/) · [Browser edition](https://mguhlin.github.io/pagespindle/browser/?v=0.2.0) · [Downloads](https://github.com/mguhlin/pagespindle/releases/latest) · [VCC Audiobook Maker](https://mguhlin.github.io/vcc/guides/skills.html#audiobook-maker)
 
 ## Start with the browser edition
 
 1. Open the browser edition over HTTPS in a browser with WebGPU support, such as a compatible recent Chrome or Edge. AI needs a usable GPU adapter and approximately 3 GB available GPU memory for the default Qwen3-1.7B model; more headroom improves reliability. Float16 alternatives are offered only for GPUs supporting that format. Phones and low-memory devices may be unsuitable.
 2. Choose **Install text model** under optional settings for local AI. The English voice installs automatically when first creating audio. Setup downloads hundreds of MB to over 1 GB for a text model plus about 40 MB for the voice; allow at least 4 GB free browser storage, more for alternate models and audio. Download hosts receive model/asset requests, not manuscript text. Models stay in this browser's site storage, which the browser may evict.
-3. Paste text or open TXT, Markdown, EPUB, or a searchable PDF. Make a manual review copy or ask the local Qwen model to propose conservative cleanup. You can compare passages with their preserved source. Mark note destinations and deliberate omissions, with reasons. Passage review is optional; Create audiobook starts from the loaded text immediately.
+3. Paste text or open TXT, Markdown, EPUB, or a searchable PDF. Make a manual review copy or ask the local Qwen model to propose conservative cleanup. You can compare passages with their preserved source. Mark note destinations and deliberate omissions, with reasons. Passage review is optional; Create audiobook starts from the loaded text immediately. Markdown formatting is skipped automatically in narration; no AI pass is required.
 4. Preview the English voice, then create a ZIP of WAV chapters, the listening text, and an M3U playlist. Save a project backup to retain the original, edits, and review decisions. Audio export is bounded to 100,000 UTF-8 text bytes and 96 MiB WAV per job; use parts for long books.
 5. After setup, use **Reload offline app** and test a small passage with networking off before relying on offline access. The versioned shell, Go core, models and voice run locally. First visit and model setup require internet. Clearing local work removes in-memory text/audio; removing downloaded models is a separate action. Saved files and browser/OS backups remain.
 
@@ -16,7 +16,7 @@ The optional chatbot step copies a passage with faithful preparation instruction
 
 ## Install a desktop edition
 
-Choose the installer for your computer from [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.3.0). PageSpindle opens in **its own desktop window**. No external browser or separately installed AI server is required.
+Choose the installer for your computer from [Downloads](https://github.com/mguhlin/pagespindle/releases/latest). PageSpindle opens in **its own desktop window**. No external browser or separately installed AI server is required.
 
 | Computer | Installer and runtime setup |
 | --- | --- |
@@ -25,7 +25,7 @@ Choose the installer for your computer from [Downloads](https://github.com/mguhl
 | macOS 15+ Apple Silicon | Open `pagespindle-darwin-arm64.pkg`; launch PageSpindle from Applications. Uses macOS's built-in WebView. |
 | Ubuntu 24.04+ / Debian 13, Linux x64 | Install `pagespindle-linux-amd64.deb` with a dependency-aware package manager, or `sudo apt install ./pagespindle-linux-amd64.deb`. The package manager installs GTK4, WebKitGTK6 and audio dependencies automatically. Internet and administrator permission are required for setup. Launch PageSpindle from the application menu. Other distributions are not qualified. |
 
-The first launch automatically downloads a pinned, verified **1.9 GB model pack** inside PageSpindle's setup window. Progress, cancellation and retry are included. Allow at least 8 GB free disk during setup and start with 8 GB RAM or more. Models are stored in the user's application-data folder, separately from the installed program; upgrades and uninstall preserve them. After successful setup, AI preparation and narration work offline on CPU. Test a short passage with networking off before relying on offline use.
+The first launch automatically downloads a pinned, verified **1.9 GB model pack** inside PageSpindle's setup window. Progress, cancellation and retry are included. Allow at least 8 GB free disk during setup and start with 8 GB RAM or more. Models are stored in the user's application-data folder, separately from the installed program; upgrades and uninstall preserve them. After successful setup, AI preparation works offline with the selected GPU or CPU backend; narration works offline on CPU. Test a short passage with networking off before relying on offline use.
 
 Paste text or open a file, then click **Create audiobook**. Passage comparison and AI preparation are optional. The native Save dialog writes a new file and preserves existing files; choose another name if it already exists. The app bundles the voice engine, local AI engine and a minimal **FFmpeg** converter for WAV chapter ZIPs, MP3 chapter ZIPs, and M4B with chapters. English narration is included. Native jobs allow 300,000 UTF-8 text bytes and 768 MiB WAV; save longer books in parts.
 
