@@ -11,6 +11,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	if filepath.Base(os.Args[0]) == "llama-server" || filepath.Base(os.Args[0]) == "llama-server.exe" {
+		os.Exit(fakeBackendMain())
+	}
 	if os.Getenv("PAGESPINDLE_ENGINE_SUPERVISOR") == "1" {
 		os.Exit(Supervise(os.Stdin))
 	}
@@ -33,6 +36,11 @@ func TestRealOfflineEngines(t *testing.T) {
 	}
 	if edit.ID != 1 || !strings.Contains(edit.After, "9:00") || !strings.Contains(edit.After, "5:00") {
 		t.Fatal("model proposal changed substantive numbers")
+	}
+	a := e.Acceleration()
+	t.Logf("Selected AI backend: %s; device: %s; fallback: %v", a.Backend, a.Device, a.Fallback)
+	if os.Getenv("PAGESPINDLE_EXPECT_GPU") == "1" && a.Backend == "CPU" {
+		t.Fatal("real GPU was required but CPU was selected")
 	}
 	out := filepath.Join(t.TempDir(), "preview-café-音.wav")
 	if err = e.Speak(ctx, "This is PageSpindle. Spin text into listening.", out, 1); err != nil {

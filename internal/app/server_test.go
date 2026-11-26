@@ -111,3 +111,31 @@ func TestClearPreventsLateResultsAndRemovesOnlyOwnFolder(t *testing.T) {
 		t.Fatal("late callback resurrected job")
 	}
 }
+
+func TestPassageWorkAdvancesInsideOneChapter(t *testing.T) {
+	s := New("key", "127.0.0.1:44000", t.TempDir())
+	defer s.Close()
+	j, _, err := s.begin("narrating", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.worker.Done()
+	s.work(j, "narrating", 250, 1000, "CPU")
+	w := call(s, "GET", "/api/job", "http://"+s.Host, s.Key, nil)
+	var got Job
+	if json.Unmarshal(w.Body.Bytes(), &got) != nil {
+		t.Fatal("invalid progress response")
+	}
+	if got.Done != 0 || got.Total != 1 || got.WorkDone != 250 || got.WorkTotal != 1000 || got.Device != "CPU" {
+		t.Fatal("chapter-only progress lost passage work")
+	}
+	j.cancel()
+	s.mu.Lock()
+	j.State = "cancelling"
+	s.mu.Unlock()
+	s.work(j, "narrating", 500, 1000, "CPU")
+	if j.WorkDone != 250 {
+		t.Fatal("cancelled job advanced with a late result")
+	}
+	s.finish(j, nil)
+}

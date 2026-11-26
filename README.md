@@ -2,7 +2,7 @@
 
 **Spin text into listening.** Prepare authorized text, compare proposed changes, and make an audiobook with local AI and narration. No account or paid narration service is required.
 
-[Open PageSpindle](https://mguhlin.github.io/pagespindle/) · [Browser edition](https://mguhlin.github.io/pagespindle/browser/?v=0.2.0) · [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.2.0) · [VCC Audiobook Maker](https://mguhlin.github.io/vcc/guides/skills.html#audiobook-maker)
+[Open PageSpindle](https://mguhlin.github.io/pagespindle/) · [Browser edition](https://mguhlin.github.io/pagespindle/browser/?v=0.2.0) · [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.3.0) · [VCC Audiobook Maker](https://mguhlin.github.io/vcc/guides/skills.html#audiobook-maker)
 
 ## Start with the browser edition
 
@@ -16,7 +16,7 @@ The optional chatbot step copies a passage with faithful preparation instruction
 
 ## Install a desktop edition
 
-Choose the installer for your computer from [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.2.0). PageSpindle opens in **its own desktop window**. No external browser or separately installed AI server is required.
+Choose the installer for your computer from [Downloads](https://github.com/mguhlin/pagespindle/releases/tag/v0.3.0). PageSpindle opens in **its own desktop window**. No external browser or separately installed AI server is required.
 
 | Computer | Installer and runtime setup |
 | --- | --- |
@@ -63,3 +63,13 @@ The workflow adapts **Lance Eaton's Book to Audio Edition**, from his [MIT-licen
 Application code is **GPL-3.0-or-later**, compatible with the bundled GPL speech components. Qwen weights are Apache-2.0; other engines, browser libraries, voices and datasets retain their own terms. Full notices and corresponding source accompany the releases; see [THIRD_PARTY.md](THIRD_PARTY.md). Software/model licenses do not grant permission to publish somebody else's book.
 
 Original documentation and splash/icon artwork are CC BY 4.0 by Miguel Guhlin. [Artwork originals](artwork/) and [complete image-generation prompts](ARTWORK_PROMPTS.json) are retained. The artwork was made with built-in OpenAI image generation.
+
+## GPU selection and progress
+
+The desktop text model automatically selects a compatible GPU, preferring a discrete card when one is detected: Vulkan on Windows/Linux and Metal on macOS. GPU backends are packaged with the app; compatible graphics drivers are supplied by the OS/GPU vendor. The app probes before loading the model and falls back to its bundled CPU engine if GPU detection, startup or inference fails. Use `--cpu` when launching the desktop executable to explicitly choose CPU preparation. No CUDA SDK or separate model server is required. The existing models are reused.
+
+The browser's optional text preparation uses WebGPU. The current English narration voice uses CPU on desktop and WebAssembly CPU in the browser. GPU preparation does not imply GPU speech synthesis. The creation panel names the processor used by the active operation.
+
+Progress advances as passages finish inside each chapter. Elapsed time and approximate time remaining sit beside Create audiobook and Cancel. Estimates learn from completed text on the actual device and refine as it runs; first-use downloads, model loading and final encoding are separate phases. Approximate listening length is shown separately from creation time. Performance samples remain in memory and contain no stored manuscript or device profile.
+
+The interface groups audio controls and output in one listening panel, with optional comparison in a disclosure. Its workflow was informed by [NaturalReader's audio conversion controls](https://help.naturalreaders.com/en/articles/11543218-working-with-text-and-audio-personal-version) and [ebook2audiobook's chapter-based interface](https://github.com/DrewThomasson/ebook2audiobook). PageSpindle retains its own artwork, local processing, direct creation and free exports.

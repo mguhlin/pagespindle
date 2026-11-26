@@ -5,7 +5,7 @@ PageSpindle code is GPL-3.0-or-later. It preserves compatible third-party notice
 | Component | Identity | Terms and source |
 | --- | --- | --- |
 | Qwen3-1.7B Q8 GGUF | Official Qwen revision `90862c4b9d2787eaed51d12237eafdfe7c5f6077`; file digest in `dependencies.json` | Apache-2.0, full notice in `licenses/`. [Model repository](https://huggingface.co/Qwen/Qwen3-1.7B-GGUF). |
-| llama.cpp | `b12681`, platform archive hashes in the lock | MIT; full notice retained. [Source](https://github.com/ggml-org/llama.cpp/tree/b12681). |
+| llama.cpp | `b12681`, CPU, Vulkan and Apple Silicon Metal archive hashes in the lock; Intel Metal built from retained hashed source | MIT; full notice retained. [Source](https://github.com/ggml-org/llama.cpp/tree/b12681). |
 | sherpa-onnx | `v1.12.35`, platform archive hashes in the lock | Apache-2.0 source with a GPL-containing speech dependency chain; distribute the speech adapter under GPL-3.0-or-later. [Source](https://github.com/k2-fsa/sherpa-onnx/tree/v1.12.35). |
 | piper-phonemize | `78a788e0b719013401572d70fef372e77bff8e43` | MIT; full notice retained. [Source](https://github.com/csukuangfj/piper-phonemize/tree/78a788e0b719013401572d70fef372e77bff8e43). |
 | eSpeak NG | Speech dependency pinned by piper-phonemize to `7251208ee427ef87e94f39d0e99b15d287224ed6` | GPL-3.0-or-later; full notice retained. [Corresponding source](https://github.com/csukuangfj/espeak-ng/tree/7251208ee427ef87e94f39d0e99b15d287224ed6). |

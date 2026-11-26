@@ -23,7 +23,7 @@ for name,url in sources:
 (ROOT/'SOURCE_ARCHIVES.json').write_text(json.dumps(inventory,indent=2)+'\n')
 with zipfile.ZipFile(dist/'pagespindle-speech-and-engine-source.zip','w')as z:
  for row in inventory:add(z,source_dir/row['file'],'PageSpindle-source/'+row['file'])
- for name in ['SOURCE_ARCHIVES.json','THIRD_PARTY.md','LICENSE','native/speech-worker.c','scripts/build.py','dependencies.json','native/media-lock.json','scripts/build_media.py']:add(z,ROOT/name,'PageSpindle-source/'+name)
+ for name in ['SOURCE_ARCHIVES.json','THIRD_PARTY.md','LICENSE','native/speech-worker.c','scripts/build.py','dependencies.json','native/media-lock.json','scripts/build_media.py','scripts/build_gpu.py','native/metal-check.m']:add(z,ROOT/name,'PageSpindle-source/'+name)
 if args.source_only:
  print('Packaged corresponding source only',flush=True);raise SystemExit(0)
 files=sorted(p for p in (ROOT/'models').rglob('*') if p.is_file())+sorted(p for p in (ROOT/'licenses').rglob('*') if p.is_file())+[ROOT/'THIRD_PARTY.md']

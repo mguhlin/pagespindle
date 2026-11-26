@@ -43,6 +43,7 @@ jobs:
       - run: python scripts/prepare_runtime.py --target ${{ matrix.target }} --common
       - run: go test ./...
       - run: go vet ./...
+      - run: python scripts/build_gpu.py --target ${{ matrix.target }}
       - run: python scripts/build_media.py --target ${{ matrix.target }}
       - run: python scripts/build.py --target ${{ matrix.target }}
       - run: python scripts/verify_package.py ${{ matrix.target }}

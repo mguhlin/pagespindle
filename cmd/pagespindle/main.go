@@ -33,6 +33,7 @@ func main() {
 	noBrowser := flag.Bool("no-browser", false, "print the local URL without opening a browser")
 	port := flag.Int("port", 0, "local port (default: choose an available port)")
 	testDir := flag.String("native-self-test", "", "run a fixed synthetic workspace pilot in the native window")
+	cpuOnly := flag.Bool("cpu", false, "use CPU for AI preparation instead of automatic GPU selection")
 	modelsDir := flag.String("models", "", "use an already installed local model folder")
 	installModels := flag.String("install-models-dir", "", "install pinned models into this folder")
 	flag.Parse()
@@ -109,6 +110,7 @@ func main() {
 	token := hex.EncodeToString(key)
 	host := l.Addr().String()
 	s := app.New(token, host, *root)
+	s.Engine.ForceCPU = *cpuOnly
 	if *modelsDir != "" {
 		s.Engine.ModelRoot, _ = filepath.Abs(*modelsDir)
 	}

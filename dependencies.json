@@ -15,6 +15,12 @@
         "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.35/sherpa-onnx-v1.12.35-linux-x64-shared.tar.bz2",
         "sha256": "34b1066d47a3a9f283af24e555899dfbe5bb62f7749dee8bc023e686dcaee1b7",
         "size": 30075941
+      },
+      "llama-gpu": {
+        "name": "llama-b12681-bin-ubuntu-vulkan-x64.tar.gz",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12681/llama-b12681-bin-ubuntu-vulkan-x64.tar.gz",
+        "sha256": "dda5771ed13276ad51fa79555c97b10a4f39f8f47ddbdeba5e300af4a984cb10",
+        "size": 37066359
       }
     },
     "darwin-amd64": {
@@ -57,6 +63,12 @@
         "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.35/sherpa-onnx-v1.12.35-win-x64-shared-MT-Release.tar.bz2",
         "sha256": "ce673db9b5f75bd06092a6d674ca1ab0874b9e294b66841a9c7b261f9a4ec75c",
         "size": 21150238
+      },
+      "llama-gpu": {
+        "name": "llama-b12681-bin-win-vulkan-x64.zip",
+        "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12681/llama-b12681-bin-win-vulkan-x64.zip",
+        "sha256": "c617cb1c390056af8c0614c421bfc262c00e3287a761102830a57ef1949f1b85",
+        "size": 39066356
       }
     }
   },

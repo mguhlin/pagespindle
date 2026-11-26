@@ -24,23 +24,28 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"unicode/utf8"
 )
 
 //go:embed web/* web/assets/*
 var assets embed.FS
 
 type Job struct {
-	ID       int            `json:"id"`
-	State    string         `json:"state"`
-	Message  string         `json:"message"`
-	Done     int            `json:"done"`
-	Total    int            `json:"total"`
-	Document *book.Document `json:"document,omitempty"`
-	Files    []string       `json:"files"`
-	paths    map[string]string
-	dir      string
-	cancel   context.CancelFunc
-	active   bool
+	WorkDone  int            `json:"work_done"`
+	WorkTotal int            `json:"work_total"`
+	Phase     string         `json:"phase"`
+	Device    string         `json:"device"`
+	ID        int            `json:"id"`
+	State     string         `json:"state"`
+	Message   string         `json:"message"`
+	Done      int            `json:"done"`
+	Total     int            `json:"total"`
+	Document  *book.Document `json:"document,omitempty"`
+	Files     []string       `json:"files"`
+	paths     map[string]string
+	dir       string
+	cancel    context.CancelFunc
+	active    bool
 }
 type Server struct {
 	Setup          *provision.Manager
@@ -297,6 +302,16 @@ func (s *Server) update(j *Job, done int, message string) {
 		j.Message = message
 	}
 }
+func (s *Server) work(j *Job, phase string, done, total int, device string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.job == j && j.State == "running" {
+		j.WorkDone = min(done, total)
+		j.WorkTotal = total
+		j.Phase = phase
+		j.Device = device
+	}
+}
 func (s *Server) finish(j *Job, e error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -318,6 +333,8 @@ func (s *Server) finish(j *Job, e error) {
 	} else {
 		j.State = "complete"
 		j.Message = "Ready to review or save"
+		j.WorkDone = j.WorkTotal
+		j.Phase = "complete"
 	}
 }
 func (s *Server) getJob(w http.ResponseWriter, r *http.Request) {
@@ -327,7 +344,14 @@ func (s *Server) getJob(w http.ResponseWriter, r *http.Request) {
 		s.json(w, map[string]string{"state": "idle"})
 		return
 	}
-	s.json(w, s.job)
+	snapshot := *s.job
+	if snapshot.Phase == "preparing" {
+		snapshot.Device = s.Engine.AccelerationLabel()
+		if s.Engine.Acceleration().Stage == "loading" && snapshot.WorkDone == 0 {
+			snapshot.Phase = "setup"
+		}
+	}
+	s.json(w, &snapshot)
 }
 func (s *Server) cancel(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
@@ -415,6 +439,11 @@ func (s *Server) prepare(w http.ResponseWriter, r *http.Request) {
 			}
 			s.finish(j, err)
 		}()
+		workDone, workTotal := 0, 0
+		for _, b := range d.Blocks {
+			workTotal += utf8.RuneCountInString(b.Source)
+		}
+		s.work(j, "preparing", 0, workTotal, s.Engine.AccelerationLabel())
 		for i, b := range d.Blocks {
 			if ctx.Err() != nil {
 				err = ctx.Err()
@@ -429,6 +458,8 @@ func (s *Server) prepare(w http.ResponseWriter, r *http.Request) {
 			d.Blocks[i].Prepared = edit.After
 			d.Blocks[i].Reason = edit.Reason
 			d.Blocks[i].Reviewed = false
+			workDone += utf8.RuneCountInString(b.Source)
+			s.work(j, "preparing", workDone, workTotal, s.Engine.AccelerationLabel())
 		}
 		s.mu.Lock()
 		if s.job == j && ctx.Err() == nil {
@@ -536,6 +567,11 @@ func (s *Server) makeAudio(ctx context.Context, j *Job, req RenderRequest, chapt
 	var names []string
 	var total int64
 	var timings []float64
+	workDone, workTotal := 0, 0
+	for _, ch := range chapters {
+		workTotal += utf8.RuneCountInString(ch.Text)
+	}
+	s.work(j, "narrating", 0, workTotal, "CPU")
 	for i, ch := range chapters {
 		if ctx.Err() != nil {
 			return ctx.Err()
@@ -591,6 +627,8 @@ func (s *Server) makeAudio(ctx context.Context, j *Job, req RenderRequest, chapt
 				return errors.New("Chapter write failed; check free disk space")
 			}
 			n += uint32(len(pcm))
+			workDone += utf8.RuneCountInString(b.Prepared)
+			s.work(j, "narrating", workDone, workTotal, "CPU")
 		}
 		if e = book.WriteWAVHeader(f, rate, n); e != nil {
 			f.Close()
@@ -615,8 +653,10 @@ func (s *Server) makeAudio(ctx context.Context, j *Job, req RenderRequest, chapt
 		s.mu.Unlock()
 		return nil
 	}
+	s.work(j, "packing", workTotal, workTotal, "CPU")
 	output := title + " - Audiobook.zip"
 	if req.Format == "mp3" {
+		s.work(j, "encoding", workTotal, workTotal, "CPU")
 		for i, name := range names {
 			mp3 := strings.TrimSuffix(name, ".wav") + ".mp3"
 			if e := s.Engine.FFmpeg(ctx, "-nostdin", "-n", "-i", filepath.Join(j.dir, name), "-ac", "1", "-c:a", "libmp3lame", "-b:a", "96k", filepath.Join(j.dir, mp3)); e != nil {
@@ -626,6 +666,7 @@ func (s *Server) makeAudio(ctx context.Context, j *Job, req RenderRequest, chapt
 		}
 	}
 	if req.Format == "m4b" {
+		s.work(j, "encoding", workTotal, workTotal, "CPU")
 		var concat, meta strings.Builder
 		meta.WriteString(";FFMETADATA1\ntitle=" + metaEscape(req.Document.Title) + "\nartist=" + metaEscape(req.Document.Author) + "\n")
 		var ms int64
