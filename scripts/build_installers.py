@@ -32,7 +32,7 @@ elif target.startswith('darwin'):
   for scale in [1,2]:run(['sips','-z',str(size*scale),str(size*scale),ROOT/'artwork/save.png','--out',iconset/('icon_'+str(size)+'x'+str(size)+('@2x'if scale==2 else'')+'.png')])
  run(['iconutil','-c','icns',iconset,'-o',resources/'PageSpindle.icns'])
  import plistlib
- with (contents/'Info.plist').open('wb')as f:plistlib.dump({'CFBundleIconFile':'PageSpindle.icns','CFBundleIdentifier':'org.mguhlin.pagespindle','CFBundleName':'PageSpindle','CFBundleDisplayName':'PageSpindle','CFBundleExecutable':'pagespindle','CFBundlePackageType':'APPL','CFBundleShortVersionString':'0.3.0','CFBundleVersion':'3','LSMinimumSystemVersion':'15.0','NSHighResolutionCapable':True},f)
+ with (contents/'Info.plist').open('wb')as f:plistlib.dump({'CFBundleIconFile':'PageSpindle.icns','CFBundleIdentifier':'org.mguhlin.pagespindle','CFBundleName':'PageSpindle','CFBundleDisplayName':'PageSpindle','CFBundleExecutable':'pagespindle','CFBundlePackageType':'APPL','CFBundleShortVersionString':'0.3.1','CFBundleVersion':'4','LSMinimumSystemVersion':'15.0','NSHighResolutionCapable':True},f)
  # Ad-hoc integrity only: no Developer ID, no notarization claim.
  run(['codesign','--force','--deep','--sign','-',app]);run(['codesign','--verify','--deep','--strict',app])
  rows=[]
@@ -47,14 +47,14 @@ elif target.startswith('darwin'):
  with components.open('rb')as f:entries=plistlib.load(f)
  for entry in entries:entry['BundleIsRelocatable']=False
  with components.open('wb')as f:plistlib.dump(entries,f)
- run(['pkgbuild','--root',payload,'--component-plist',components,'--identifier','org.mguhlin.pagespindle','--version','0.3.0','--install-location','/',dist/('pagespindle-'+target+'.pkg')])
+ run(['pkgbuild','--root',payload,'--component-plist',components,'--identifier','org.mguhlin.pagespindle','--version','0.3.1','--install-location','/',dist/('pagespindle-'+target+'.pkg')])
 elif target=='linux-amd64':
  payload=dist/target/'debroot'
  if payload.exists():shutil.rmtree(payload)
  app=payload/'opt/pagespindle';app.parent.mkdir(parents=True);shutil.copytree(stage,app,symlinks=True)
  desktop=payload/'usr/share/applications';desktop.mkdir(parents=True);(desktop/'pagespindle.desktop').write_text('[Desktop Entry]\nType=Application\nName=PageSpindle\nComment=Spin text into listening\nExec=/opt/pagespindle/pagespindle\nIcon=pagespindle\nTerminal=false\nCategories=AudioVideo;Audio;Education;\n')
  icon=payload/'usr/share/icons/hicolor/256x256/apps';icon.mkdir(parents=True);shutil.copy2(ROOT/'artwork/save.png',icon/'pagespindle.png')
- control=payload/'DEBIAN';control.mkdir();(control/'control').write_text('Package: pagespindle\nVersion: 0.3.0\nArchitecture: amd64\nMaintainer: Miguel Guhlin <mguhlin@users.noreply.github.com>\nDepends: libc6 (>= 2.39), libgtk-4-1, libwebkitgtk-6.0-4, libstdc++6, libgomp1, libvulkan1, libssl3t64, libasound2t64, ca-certificates, gstreamer1.0-plugins-base, gstreamer1.0-plugins-good\nSection: sound\nPriority: optional\nHomepage: https://mguhlin.github.io/pagespindle/\nDescription: Local text preparation and audiobook maker\n Native window, local AI, speech and bundled media converter.\n First launch downloads verified models once; then works offline.\n')
+ control=payload/'DEBIAN';control.mkdir();(control/'control').write_text('Package: pagespindle\nVersion: 0.3.1\nArchitecture: amd64\nMaintainer: Miguel Guhlin <mguhlin@users.noreply.github.com>\nDepends: libc6 (>= 2.39), libgtk-4-1, libwebkitgtk-6.0-4, libstdc++6, libgomp1, libvulkan1, libssl3t64, libasound2t64, ca-certificates, gstreamer1.0-plugins-base, gstreamer1.0-plugins-good\nSection: sound\nPriority: optional\nHomepage: https://mguhlin.github.io/pagespindle/\nDescription: Local text preparation and audiobook maker\n Native window, local AI, speech and bundled media converter.\n First launch downloads verified models once; then works offline.\n')
  run(['dpkg-deb','--root-owner-group','--build',payload,dist/'pagespindle-linux-amd64.deb'])
 else:raise ValueError('Unsupported installer target')
 print('Packaged native installer:',target)

@@ -538,13 +538,14 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, errors.New("Narrate this book in sections up to 300,000 UTF-8 bytes"))
 		return
 	}
-	if req.Preview {
-		r := []rune(master)
-		if len(r) > 350 {
-			master = string(r[:350])
-		}
-	}
 	chapters := book.Chapters(master)
+	if req.Preview {
+		r := []rune(chapters[0].Text)
+		if len(r) > 350 {
+			r = r[:350]
+		}
+		chapters = []book.Chapter{{Title: "Voice preview", Text: string(r)}}
+	}
 	j, ctx, e := s.begin("Generating local narration", len(chapters))
 	if e != nil {
 		s.fail(w, e)

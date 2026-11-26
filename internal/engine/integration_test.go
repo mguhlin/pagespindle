@@ -43,7 +43,11 @@ func TestRealOfflineEngines(t *testing.T) {
 		t.Fatal("real GPU was required but CPU was selected")
 	}
 	out := filepath.Join(t.TempDir(), "preview-café-音.wav")
-	if err = e.Speak(ctx, "This is PageSpindle. Spin text into listening.", out, 1); err != nil {
+	chapters := book.Chapters("## **PageSpindle**\n\nSpin *text* into listening.")
+	if len(chapters) != 1 || strings.Join(strings.Fields(chapters[0].Text), " ") != "PageSpindle Spin text into listening." {
+		t.Fatal("Markdown formatting reached the speech input")
+	}
+	if err = e.Speak(ctx, chapters[0].Text, out, 1); err != nil {
 		t.Fatal(err)
 	}
 	pcm, rate, err := book.PCMData(out)

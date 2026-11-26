@@ -147,7 +147,13 @@ func Load(data []byte) (Document, error) {
 	return d, Validate(d)
 }
 func Master(d Document) string {
-	var body []string
+	var body strings.Builder
+	// New can split a long paragraph into several working passages. Rejoin those
+	// with their original whitespace, not a new blank paragraph that can break
+	// Markdown emphasis or links. Relocated/omitted passages still separate text.
+	normalized := strings.ReplaceAll(d.Source, "\r\n", "\n")
+	cursor, previousBody := 0, 0
+	paragraphBreak := regexp.MustCompile(`\n[\t ]*\n`)
 	type group struct {
 		title string
 		notes []string
@@ -155,6 +161,12 @@ func Master(d Document) string {
 	var groups []group
 	chapter := "Source notes"
 	for _, p := range d.Blocks {
+		gap := "\n\n"
+		if offset := strings.Index(normalized[cursor:], p.Source); offset >= 0 {
+			start := cursor + offset
+			gap = normalized[cursor:start]
+			cursor = start + len(p.Source)
+		}
 		first := strings.TrimSpace(strings.SplitN(p.Source, "\n", 2)[0])
 		if strings.HasPrefix(first, "# ") {
 			chapter = strings.TrimSpace(strings.TrimPrefix(first, "# "))
@@ -169,7 +181,15 @@ func Master(d Document) string {
 			g := &groups[len(groups)-1]
 			g.notes = append(g.notes, p.Prepared)
 		} else {
-			body = append(body, p.Prepared)
+			if body.Len() > 0 {
+				if p.ID == previousBody+1 && !paragraphBreak.MatchString(gap) {
+					body.WriteString(gap)
+				} else {
+					body.WriteString("\n\n")
+				}
+			}
+			body.WriteString(p.Prepared)
+			previousBody = p.ID
 		}
 	}
 	if len(groups) > 0 {
@@ -177,9 +197,12 @@ func Master(d Document) string {
 		for _, g := range groups {
 			notes = append(notes, "## "+g.title+"\n\n"+strings.Join(g.notes, "\n\n"))
 		}
-		body = append(body, "# Notes\n\n"+strings.Join(notes, "\n\n"))
+		if body.Len() > 0 {
+			body.WriteString("\n\n")
+		}
+		body.WriteString("# Notes\n\n" + strings.Join(notes, "\n\n"))
 	}
-	return strings.TrimSpace(strings.Join(body, "\n\n")) + "\n"
+	return strings.TrimSpace(body.String()) + "\n"
 }
 func Ready(d Document) error {
 	if err := Validate(d); err != nil {
@@ -190,7 +213,7 @@ func Ready(d Document) error {
 			return fmt.Errorf("Record a reason for omitting passage %d", b.ID)
 		}
 	}
-	if strings.TrimSpace(Master(d)) == "" {
+	if len(Chapters(Master(d))) == 0 {
 		return errors.New("The narration text is empty")
 	}
 	return nil
@@ -199,30 +222,6 @@ func Ready(d Document) error {
 type Chapter struct {
 	Title string
 	Text  string
-}
-
-func Chapters(text string) []Chapter {
-	var out []Chapter
-	title := "Listening Edition"
-	var body strings.Builder
-	flush := func() {
-		if strings.TrimSpace(body.String()) != "" {
-			out = append(out, Chapter{title, strings.TrimSpace(body.String())})
-			body.Reset()
-		}
-	}
-	for _, line := range strings.Split(text, "\n") {
-		trim := strings.TrimSpace(line)
-		if strings.HasPrefix(trim, "# ") {
-			flush()
-			title = strings.TrimSpace(strings.TrimPrefix(trim, "# "))
-			body.WriteString(title + ".\n\n")
-		} else {
-			body.WriteString(line + "\n")
-		}
-	}
-	flush()
-	return out
 }
 
 func EPUB(data []byte) (string, error) {

@@ -4,7 +4,7 @@
 [Setup]
 AppId={{549647D8-C689-4C7F-A6A5-AB399CE61FEF}
 AppName=PageSpindle
-AppVersion=0.3.0
+AppVersion=0.3.1
 AppPublisher=Miguel Guhlin
 AppPublisherURL=https://github.com/mguhlin/pagespindle
 DefaultDirName={autopf}\PageSpindle
