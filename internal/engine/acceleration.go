@@ -39,7 +39,10 @@ func chooseDevice(output string, prefix string) (string, string) {
 		score := 1
 		for _, s := range []string{"nvidia", "geforce", "quadro", "tesla", "radeon rx", "radeon pro", "radeon vii", "arc"} {
 			if strings.Contains(lower, s) {
-				score = 50
+				score = 100
+				if s == "arc" {
+					score = 70
+				}
 				break
 			}
 		}

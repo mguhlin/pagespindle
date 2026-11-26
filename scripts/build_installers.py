@@ -42,7 +42,12 @@ elif target.startswith('darwin'):
    rows.append({'path':p.relative_to(app).as_posix(),'sha256':d,'bytes':p.stat().st_size})
  # This auxiliary receipt is outside the signed app; adding resources would invalidate its seal.
  (dist/('pagespindle-'+target+'-signed-inventory.json')).write_text(json.dumps(rows,indent=2)+'\n')
- run(['pkgbuild','--root',payload,'--identifier','org.mguhlin.pagespindle','--version','0.3.0','--install-location','/',dist/('pagespindle-'+target+'.pkg')])
+ components=dist/target/'components.plist'
+ run(['pkgbuild','--analyze','--root',payload,components])
+ with components.open('rb')as f:entries=plistlib.load(f)
+ for entry in entries:entry['BundleIsRelocatable']=False
+ with components.open('wb')as f:plistlib.dump(entries,f)
+ run(['pkgbuild','--root',payload,'--component-plist',components,'--identifier','org.mguhlin.pagespindle','--version','0.3.0','--install-location','/',dist/('pagespindle-'+target+'.pkg')])
 elif target=='linux-amd64':
  payload=dist/target/'debroot'
  if payload.exists():shutil.rmtree(payload)

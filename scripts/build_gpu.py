@@ -23,7 +23,7 @@ if not(work/'llama.cpp-b12681').exists():
 source=work/'llama.cpp-b12681';build=cache/'metal-build'
 # New Xcode images may deliver the compiler as a separate Apple SDK component.
 if subprocess.run(['xcrun','--find','metal'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:run(['xcodebuild','-downloadComponent','MetalToolchain'])
-flags=['-DCMAKE_BUILD_TYPE=Release','-DCMAKE_OSX_DEPLOYMENT_TARGET=15.0','-DGGML_METAL=ON','-DGGML_METAL_EMBED_LIBRARY=ON','-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON','-DCMAKE_INSTALL_RPATH=@loader_path','-DCMAKE_INSTALL_NAME_DIR=@rpath','-DGGML_NATIVE=OFF','-DGGML_OPENMP=OFF','-DLLAMA_BUILD_TESTS=OFF','-DLLAMA_BUILD_SERVER=ON']
+flags=['-DCMAKE_BUILD_TYPE=Release','-DCMAKE_OSX_DEPLOYMENT_TARGET=15.0','-DGGML_METAL=ON','-DGGML_METAL_EMBED_LIBRARY=ON','-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON','-DCMAKE_INSTALL_RPATH=@loader_path','-DCMAKE_INSTALL_NAME_DIR=@rpath','-DGGML_NATIVE=OFF','-DGGML_OPENMP=OFF','-DLLAMA_OPENSSL=OFF','-DLLAMA_BUILD_TESTS=OFF','-DLLAMA_BUILD_SERVER=ON']
 run(['cmake','-S',source,'-B',build,*flags]);run(['cmake','--build',build,'--config','Release','--target','llama-server','-j','3'])
 dest=ROOT/'runtime'/target/'llama-gpu'
 if dest.exists():shutil.rmtree(dest)

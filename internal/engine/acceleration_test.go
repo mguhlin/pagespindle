@@ -13,7 +13,7 @@ import (
 )
 
 func TestDeviceSelection(t *testing.T) {
-	id, name := chooseDevice("Available devices:\n Vulkan0: llvmpipe (123 MiB, 123 MiB free)\n Vulkan1: Intel(R) UHD Graphics 630 (10000 MiB, 5000 MiB free)\n Vulkan2: NVIDIA GeForce RTX 2060 (6000 MiB, 5000 MiB free)", "Vulkan")
+	id, name := chooseDevice("Available devices:\n Vulkan0: llvmpipe (123 MiB, 123 MiB free)\n Vulkan1: Intel(R) Arc(TM) Graphics (10000 MiB, 5000 MiB free)\n Vulkan2: NVIDIA GeForce RTX 2060 (6000 MiB, 5000 MiB free)", "Vulkan")
 	if id != "Vulkan2" || !strings.Contains(name, "RTX") {
 		t.Fatal("discrete hardware GPU was not selected")
 	}
